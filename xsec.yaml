@@ -1,0 +1,407 @@
+##### XSEC VALUES IN PB 
+
+ttX_mass3000_width4:
+  xSec: 0.00000335
+  isUsed: true
+
+ttX_mass3000_width10:
+  xSec: 0.00000335
+  isUsed: true
+  
+ttX_mass3000_width20:
+  xSec: 0.00000335
+  isUsed: true  
+  
+ttX_mass3000_width50:
+  xSec: 0.00000335
+  isUsed: true
+
+ttX_mass2500_width4:
+  xSec: 0.0000161
+  isUsed: true
+
+ttX_mass2500_width10:
+  xSec: 0.0000161
+  isUsed: true
+  
+ttX_mass2500_width20:
+  xSec: 0.0000161
+  isUsed: true 
+  
+ttX_mass2500_width50:
+  xSec: 0.0000161
+  isUsed: true
+  
+ttX_mass2250_width4:
+  xSec: 0.0000363
+  isUsed: true
+
+ttX_mass2250_width10:
+  xSec: 0.0000363
+  isUsed: true
+  
+ttX_mass2250_width20:
+  xSec: 0.0000363
+  isUsed: true  
+  
+ttX_mass2250_width50:
+  xSec: 0.0000363
+  isUsed: true
+  
+ttX_mass2000_width4:
+  xSec: 0.0000850
+  isUsed: true
+
+ttX_mass2000_width10:
+  xSec: 0.0000850
+  isUsed: true
+  
+ttX_mass2000_width20:
+  xSec: 0.0000850
+  isUsed: true  
+  
+ttX_mass2000_width50:
+  xSec: 0.0000850
+  isUsed: true
+
+ttX_mass1750_width4:
+  xSec: 0.000207
+  isUsed: true
+
+ttX_mass1750_width10:
+  xSec: 0.000207
+  isUsed: true
+  
+ttX_mass1750_width20:
+  xSec: 0.000207
+  isUsed: true  
+  
+ttX_mass1750_width50:
+  xSec: 0.000207
+  isUsed: true
+  
+ttX_mass1500_width4:
+  xSec: 0.000540
+  isUsed: true
+
+ttX_mass1500_width10:
+  xSec: 0.000540
+  isUsed: true
+  
+ttX_mass1500_width20:
+  xSec: 0.000540
+  isUsed: true  
+  
+ttX_mass1500_width50:
+  xSec: 0.000540
+  isUsed: true
+
+ttX_mass1250_width4:
+  xSec: 0.00152
+  isUsed: true
+
+ttX_mass1250_width10:
+  xSec: 0.00152
+  isUsed: true
+  
+ttX_mass1250_width20:
+  xSec: 0.00152
+  isUsed: true  
+  
+ttX_mass1250_width50:
+  xSec: 0.00152
+  isUsed: true
+
+ttX_mass1000_width4:
+  xSec: 0.00469
+  isUsed: true
+
+ttX_mass1000_width10:
+  xSec: 0.00469
+  isUsed: true
+  
+ttX_mass1000_width20:
+  xSec: 0.00469
+  isUsed: true  
+  
+ttX_mass1000_width50:
+  xSec: 0.00469
+  isUsed: true
+  
+ttX_mass800_width4:
+  xSec: 0.013
+  isUsed: true
+
+ttX_mass800_width10:
+  xSec: 0.0130
+  isUsed: true
+  
+ttX_mass800_width20:
+  xSec: 0.0130
+  isUsed: true  
+  
+ttX_mass800_width50:
+  xSec: 0.0130
+  isUsed: true
+  
+ttX_mass600_width4:
+  xSec: 0.0408
+  isUsed: true
+
+ttX_mass600_width10:
+  xSec: 0.0408
+  isUsed: true
+  
+ttX_mass600_width20:
+  xSec: 0.0408
+  isUsed: true  
+  
+ttX_mass600_width50:
+  xSec: 0.0408
+  isUsed: true
+  
+ttX_mass400_width4:
+  xSec: 0.160
+  isUsed: true
+
+ttX_mass400_width10:
+  xSec: 0.160
+  isUsed: true
+  
+ttX_mass400_width20:
+  xSec: 0.160
+  isUsed: true  
+  
+ttX_mass400_width50:
+  xSec: 0.160
+  isUsed: true
+  
+tt_hadronic:
+  xSec: 380.11
+  isUsed: true
+
+tt_semileptonic_HT500_NJets9:
+  xSec: 2.268
+  isUsed: false
+ 
+tt_dilepton_HT500_NJets9:
+  xSec: 1.456
+  isUsed: false
+
+tt_semileptonic:
+  xSec: 364.31
+  isUsed: true
+ 
+tt_dilepton:
+  xSec: 87.33
+  isUsed: true
+
+WW:
+  xSec: 118.7
+  isUsed: true
+
+WZ:
+  xSec: 47.13
+  isUsed: true 
+
+ZZ:
+  xSec: 16.523
+  isUsed: true
+  
+tW:
+  xSec: 19.553
+  isUsed: true
+ 
+tbarW:
+  xSec: 19.553
+  isUsed: true
+
+ttH_HTobb:
+  xSec: 0.5269
+  isUsed: true
+
+ttH_HToNonbb:
+  xSec: 0.5638
+  isUsed: true
+
+ttHH:
+  xSec: 0.000741
+  isUsed: true
+ 
+ttWH:
+  xSec: 0.00157
+  isUsed: true
+
+ttWJets:
+  xSec: 0.611
+  isUsed: true
+
+ttWW:
+  xSec: 0.00788
+  isUsed: true
+
+ttWZ:
+  xSec: 0.00297
+  isUsed: true
+  
+ttZH:
+  xSec: 0.00125
+  isUsed: true
+  
+ttZJets:
+  xSec: 0.783
+  isUsed: true
+
+ttZZ:
+  xSec: 0.00157
+  isUsed: true
+
+tttJ:
+  xSec: 0.000474
+  isUsed: true
+  
+tttW:
+  xSec: 0.00788
+  isUsed: true
+
+tttt:
+  xSec: 0.012
+  isUsed: true
+
+qcd_Mu_20:
+  xSec: 2881500.0
+  isUsed: true
+
+qcd_Mu_30:
+  xSec: 3657550.0
+  isUsed: true
+  
+qcd_Mu_50:
+  xSec: 1154520.0
+  isUsed: true
+
+qcd_Mu_80:
+  xSec: 347191.0
+  isUsed: true
+
+qcd_Mu_120:
+  xSec: 90131.0
+  isUsed: true
+
+qcd_Mu_170:
+  xSec: 21509.4
+  isUsed: true
+  
+qcd_Mu_300:
+  xSec: 7224.3
+  isUsed: true  
+
+qcd_Mu_470:
+  xSec: 617.11
+  isUsed: true
+
+qcd_Mu_600:
+  xSec: 57.84
+  isUsed: true
+
+qcd_Mu_800:
+  xSec: 22.07
+  isUsed: true
+
+qcd_Mu_1000:
+  xSec: 3.861
+  isUsed: true
+
+qcd_Mu_inf:
+  xSec: 1.078
+  isUsed: true
+
+qcd_em_20:
+  xSec: 1437610.8
+  isUsed: true
+
+qcd_em_30:
+  xSec: 5427760.0
+  isUsed: true
+  
+qcd_em_50:
+  xSec: 6485600.0
+  isUsed: true
+
+qcd_em_80:
+  xSec: 1991360.0
+  isUsed: true
+
+qcd_em_120:
+  xSec: 380538.0
+  isUsed: true
+
+qcd_em_170:
+  xSec: 72499.4
+  isUsed: true
+  
+qcd_em_300:
+  xSec: 21349.8
+  isUsed: true  
+
+qcd_em_inf:
+  xSec: 1350.0
+  isUsed: true
+
+dy_ht_200:
+  xSec: 181.92
+  isUsed: true
+ 
+dy_ht_400:
+  xSec: 54.933
+  isUsed: true
+
+dy_ht_600:
+  xSec: 7.8581
+  isUsed: true
+
+dy_ht_800:
+  xSec: 1.9477
+  isUsed: true
+
+dy_ht_1200:
+  xSec: 0.8587
+  isUsed: true
+
+dy_ht_2500:
+  xSec: 0.2028
+  isUsed: true
+
+dy_ht_inf:
+  xSec: 0.003219
+  isUsed: true
+  
+wj_ht_200:
+  xSec: 1627.45
+  isUsed: true
+ 
+wj_ht_400:
+  xSec: 435.237
+  isUsed: true
+
+wj_ht_600:
+  xSec: 59.181
+  isUsed: true
+
+wj_ht_800:
+  xSec: 16.3296
+  isUsed: true
+
+wj_ht_1200:
+  xSec: 8.0005
+  isUsed: true
+
+wj_ht_2500:
+  xSec: 2.1419
+  isUsed: true
+
+wj_ht_inf:
+  xSec: 0.1634
+  isUsed: true
+
+

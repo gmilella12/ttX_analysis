@@ -5,7 +5,7 @@ import ROOT
 import yaml
 from yaml.loader import SafeLoader
 
-ROOT_DIR = '/afs/desy.de/user/g/gmilella/ttX3_post_ntuplization_analysis/ttX_analysis/'
+ROOT_DIR = os.getcwd()
 
 def parsing_file(input_file):
     print("Processing file: {}".format(input_file))

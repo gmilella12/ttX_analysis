@@ -23,6 +23,7 @@ The various systematics can be read from the ntuples
 * the script fetches the name of the process from the file (e.g `tt_dilepton`) which is then used to fetch its cross-section in the `xsec.yaml`.
 Adjust the file name accordingly!
 * in case of bkg files, I have split the same processes in multiple files to make the analysis faster. Therefore in the repository where the ntuples are fetched, there is an additional file `sum_gen_weights.yaml` that sums up the genweights for all the split files per process. 
+* the scripts (current version: `commit 54c73fd`) select event with exactly 2 opposite sign leptons, at least 2 AK4 (2b) to be outside the HOTVR jet cone (if the latter is present in an event)
 
 ## Condor submission
 Parallel analysis of files can be done by sendind as many condor jobs as ntuples. This can be done with the following commands:

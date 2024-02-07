@@ -1,0 +1,18 @@
+name: ttX_analysis
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: rootcern/root:latest
+
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v2
+
+      - name: Run test script
+          run: |
+            python lepton_variable.py --input_file test_files/DoubleMuon_2018_A_output.root --output_dir analysis_output --year 2018 --is_data
+            python lepton_variable.py --input_file test_files/tt_dilepton_MC2018_ntuplizer_output.root --output_dir analysis_output --year 2018

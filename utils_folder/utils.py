@@ -55,7 +55,7 @@ def sum_gen_weights(input_file, process_name, is_sgn, year):
         sumgenweight = root_file.Get("sumGenWeights")
         return sumgenweight.GetVal()
     else:
-        with open("/nfs/dust/cms/user/gmilella/ttX_ntuplizer/bkg_{}_hotvr/merged/sum_gen_weights.yaml".format(year)) as sumGenWeights_file:
+        with open("{}/test_files/sum_gen_weights.yaml".format(ROOT_DIR)) as sumGenWeights_file:
             sumGenWeightsFile = yaml.load(sumGenWeights_file, Loader=SafeLoader)
             return sumGenWeightsFile[process_name]
 

@@ -9,25 +9,25 @@ ROOT_DIR = '/afs/desy.de/user/g/gmilella/ttX3_post_ntuplization_analysis/ttX_ana
 
 def parsing_file(input_file):
     print("Processing file: {}".format(input_file))
-    pattern = re.compile(r"merged\/([^/]*?)_MC")
+    pattern = re.compile(r"\/([^/]*?)_MC")
     match = pattern.search(str(input_file))
     if match:
         print("Process name: {}".format(match.group(1)))
         return match.group(1)
     else:
-        pattern = re.compile(r"merged\/([^/]*?)_ntuplizer")
+        pattern = re.compile(r"\/([^/]*?)_ntuplizer")
         match = pattern.search(str(input_file))
         if match:
             print("Process name: {}".format(match.group(1)))
             return match.group(1)
         else:
-            pattern = re.compile(r"merged\/([^/]*?)(?:_\d+)?_output")
+            pattern = re.compile(r"\/([^/]*?)(?:_\d+)?_output")
             match = pattern.search(str(input_file))
             if match:
                 print("Process name: {}".format(match.group(1)))
                 return match.group(1)
             else:
-                pattern = re.compile(r"merged\/([^/]*?)_merged")
+                pattern = re.compile(r"\/([^/]*?)_merged")
                 match = pattern.search(str(input_file))
                 if match:
                     print("Process name: {}".format(match.group(1)))

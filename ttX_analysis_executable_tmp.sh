@@ -13,7 +13,7 @@ source /cvmfs/cms.cern.ch/common/crab-setup.sh
 cd /afs/desy.de/user/g/gmilella/ttx3_analysis/CMSSW_11_1_7/src
 eval `scramv1 runtime -sh`
 
-cd /afs/desy.de/user/g/gmilella/ttX3_post_ntuplization_analysis/
+cd /afs/desy.de/user/g/gmilella/ttX3_post_ntuplization_analysis/ttX_analysis
 
 echo "ARGS: $@"
 

@@ -1,178 +1,90 @@
 ##### XSEC VALUES IN PB 
 
-ttX_mass3000_width4:
+TTZprimeToTT_M-4000:
+  xSec: 0.00000016
+  isUsed: true
+
+TTZprimeToTT_M-3000:
   xSec: 0.00000335
   isUsed: true
 
-ttX_mass3000_width10:
-  xSec: 0.00000335
-  isUsed: true
-  
-ttX_mass3000_width20:
-  xSec: 0.00000335
-  isUsed: true  
-  
-ttX_mass3000_width50:
+ttX_mass3000:
   xSec: 0.00000335
   isUsed: true
 
-ttX_mass2500_width4:
+TTZprimeToTT_M-2500:
   xSec: 0.0000161
   isUsed: true
 
-ttX_mass2500_width10:
+ttX_mass2500:
   xSec: 0.0000161
   isUsed: true
-  
-ttX_mass2500_width20:
-  xSec: 0.0000161
+
+TTZprimeToTT_M-2250:
+  xSec: 0.0000363
+  isUsed: true
+
+ttX_mass2250:
+  xSec: 0.0000363
+  isUsed: true
+
+TTZprimeToTT_M-2000:
+  xSec: 0.0000850
+  isUsed: true
+
+ttX_mass2000:
+  xSec: 0.0000850
+  isUsed: true
+
+TTZprimeToTT_M-1750:
+  xSec: 0.000207
+  isUsed: true
+
+ttX_mass1750:
+  xSec: 0.000207
+  isUsed: true
+
+TTZprimeToTT_M-1500:
+  xSec: 0.000540
   isUsed: true 
-  
-ttX_mass2500_width50:
-  xSec: 0.0000161
-  isUsed: true
-  
-ttX_mass2250_width4:
-  xSec: 0.0000363
-  isUsed: true
 
-ttX_mass2250_width10:
-  xSec: 0.0000363
-  isUsed: true
-  
-ttX_mass2250_width20:
-  xSec: 0.0000363
-  isUsed: true  
-  
-ttX_mass2250_width50:
-  xSec: 0.0000363
-  isUsed: true
-  
-ttX_mass2000_width4:
-  xSec: 0.0000850
-  isUsed: true
-
-ttX_mass2000_width10:
-  xSec: 0.0000850
-  isUsed: true
-  
-ttX_mass2000_width20:
-  xSec: 0.0000850
-  isUsed: true  
-  
-ttX_mass2000_width50:
-  xSec: 0.0000850
-  isUsed: true
-
-ttX_mass1750_width4:
-  xSec: 0.000207
-  isUsed: true
-
-ttX_mass1750_width10:
-  xSec: 0.000207
-  isUsed: true
-  
-ttX_mass1750_width20:
-  xSec: 0.000207
-  isUsed: true  
-  
-ttX_mass1750_width50:
-  xSec: 0.000207
-  isUsed: true
-  
-ttX_mass1500_width4:
+ttX_mass1500:
   xSec: 0.000540
   isUsed: true
 
-ttX_mass1500_width10:
-  xSec: 0.000540
-  isUsed: true
-  
-ttX_mass1500_width20:
-  xSec: 0.000540
-  isUsed: true  
-  
-ttX_mass1500_width50:
-  xSec: 0.000540
-  isUsed: true
-
-ttX_mass1250_width4:
+TTZprimeToTT_M-1250:
   xSec: 0.00152
   isUsed: true
 
-ttX_mass1250_width10:
-  xSec: 0.00152
-  isUsed: true
-  
-ttX_mass1250_width20:
-  xSec: 0.00152
-  isUsed: true  
-  
-ttX_mass1250_width50:
+ttX_mass1250:
   xSec: 0.00152
   isUsed: true
 
-ttX_mass1000_width4:
+TTZprimeToTT_M-1000:
   xSec: 0.00469
   isUsed: true
 
-ttX_mass1000_width10:
+ttX_mass1000:
   xSec: 0.00469
   isUsed: true
   
-ttX_mass1000_width20:
-  xSec: 0.00469
-  isUsed: true  
-  
-ttX_mass1000_width50:
-  xSec: 0.00469
-  isUsed: true
-  
-ttX_mass800_width4:
+ttX_mass800:
   xSec: 0.013
   isUsed: true
 
-ttX_mass800_width10:
-  xSec: 0.0130
-  isUsed: true
-  
-ttX_mass800_width20:
-  xSec: 0.0130
+TTZprimeToTT_M-750:
+  xSec: 0.0164
   isUsed: true  
-  
-ttX_mass800_width50:
-  xSec: 0.0130
-  isUsed: true
-  
-ttX_mass600_width4:
+
+ttX_mass600:
   xSec: 0.0408
   isUsed: true
 
-ttX_mass600_width10:
-  xSec: 0.0408
-  isUsed: true
-  
-ttX_mass600_width20:
-  xSec: 0.0408
+TTZprimeToTT_M-500:
+  xSec: 0.0756
   isUsed: true  
   
-ttX_mass600_width50:
-  xSec: 0.0408
-  isUsed: true
-  
-ttX_mass400_width4:
-  xSec: 0.160
-  isUsed: true
-
-ttX_mass400_width10:
-  xSec: 0.160
-  isUsed: true
-  
-ttX_mass400_width20:
-  xSec: 0.160
-  isUsed: true  
-  
-ttX_mass400_width50:
+ttX_mass400:
   xSec: 0.160
   isUsed: true
   
@@ -180,7 +92,7 @@ tt_hadronic:
   xSec: 380.11
   isUsed: true
 
-tt_semileptonic_HT500_NJets9:
+tt_semilepton_HT500_NJets9:
   xSec: 2.268
   isUsed: false
  
@@ -188,7 +100,7 @@ tt_dilepton_HT500_NJets9:
   xSec: 1.456
   isUsed: false
 
-tt_semileptonic:
+tt_semilepton:
   xSec: 364.31
   isUsed: true
  
@@ -348,32 +260,44 @@ qcd_em_inf:
   xSec: 1350.0
   isUsed: true
 
+dy_m-50:
+  xSec: 5343
+  isUsed: true
+
+dy_m-10_50:
+  xSec: 18610
+  isUsed: true
+
+dy_ht_100:
+  xSec: 140
+  isUsed: true
+
 dy_ht_200:
-  xSec: 181.92
+  xSec: 161.1
   isUsed: true
  
 dy_ht_400:
-  xSec: 54.933
+  xSec: 48.66
   isUsed: true
 
 dy_ht_600:
-  xSec: 7.8581
+  xSec: 6.968
   isUsed: true
 
 dy_ht_800:
-  xSec: 1.9477
+  xSec: 1.743 
   isUsed: true
 
 dy_ht_1200:
-  xSec: 0.8587
+  xSec: 0.8052 
   isUsed: true
 
 dy_ht_2500:
-  xSec: 0.2028
+  xSec: 0.1933
   isUsed: true
 
 dy_ht_inf:
-  xSec: 0.003219
+  xSec: 0.003468
   isUsed: true
   
 wj_ht_200:

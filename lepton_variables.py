@@ -11,13 +11,13 @@ from array import array
 
 from collections import OrderedDict
 
-sys.path.append('/afs/desy.de/user/g/gmilella/ttX3_post_ntuplization_analysis/ttX_analysis')
+sys.path.append(os.getcwd())
 from utils_folder.utils import *
 
 import ROOT
 ROOT.ROOT.EnableImplicitMT()
 
-ROOT_DIR = '/afs/desy.de/user/g/gmilella/ttX3_post_ntuplization_analysis/ttX_analysis'
+ROOT_DIR = os.getcwd()
 cpp_functions_header = "{}/cpp_functions_header.h".format(ROOT_DIR)
 if not os.path.isfile(cpp_functions_header):
     print('No cpp header found!')

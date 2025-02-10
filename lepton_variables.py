@@ -232,16 +232,15 @@ class Processor:
             )
 
             if lepton_selection == 'single_muon':
-                selections = [
-                    f"is_BJets_{self.ak4_systematic}_{BTAGGING_WP}_outside_{BOOSTED_JETS}_and_tightRelIso_{LEPTON_ID_MUON}ID_Muons_in_same_hemisphere", 
-                    f"is_selectedHOTVRJets_{self.boosted_systematic}_and_tightRelIso_{LEPTON_ID_MUON}ID_Muons_in_same_hemisphere == 0"
-                    f"tightRelIso_{LEPTON_ID_MUON}ID_Muons_pt[0] > 50 && MET_energy > 300"
-                ]
-                for selection_string in selections:
-                    root_df_filtered = adding_event_selection(
-                        root_df_filtered, 
-                        selection_string
-                    )
+                selection_string = (
+                    f"(is_BJets_{self.ak4_systematic}_{BTAGGING_WP}_outside_{BOOSTED_JETS}_and_tightRelIso_{LEPTON_ID_MUON}ID_Muons_in_same_hemisphere) && "
+                    f"(is_selectedHOTVRJets_{self.boosted_systematic}_and_tightRelIso_{LEPTON_ID_MUON}ID_Muons_in_same_hemisphere == 0) && "
+                    f"(tightRelIso_{LEPTON_ID_MUON}ID_Muons_pt[0] > 50 && MET_energy > 300)"
+                )
+                root_df_filtered = adding_event_selection(
+                    root_df_filtered, 
+                    selection_string
+                )
 
             # dxy, dz cuts on electrons
             # root_df_filtered = adding_event_selection(root_df_filtered,
@@ -265,8 +264,7 @@ class Processor:
                 )
 
             if not self.is_data:
-                if self.is_sgn:
-                    WEIGHTS_DICT[lepton_selection] += " * bdt_sf_weight_bdt_nominal"
+                WEIGHTS_DICT[lepton_selection] += " * bdt_sf_weight_bdt_nominal"
 
                 weight_formula = WEIGHTS_DICT[lepton_selection]
                 if self.year == '2018':

@@ -10,8 +10,10 @@ source /cvmfs/cms.cern.ch/cmsset_default.sh
 source /cvmfs/cms.cern.ch/common/crab-setup.sh
 
 
-cd /afs/desy.de/user/g/gmilella/ttx3_analysis/CMSSW_11_1_7/src
-eval `scramv1 runtime -sh`
+# cd /afs/desy.de/user/g/gmilella/ttx3_analysis/CMSSW_11_1_7/src
+# eval `scramv1 runtime -sh`
+
+source /cvmfs/sft.cern.ch/lcg/views/LCG_105/x86_64-el9-gcc13-opt/setup.sh
 
 cd /afs/desy.de/user/g/gmilella/ttX3_post_ntuplization_analysis/ttX_analysis
 
@@ -22,7 +24,7 @@ echo "ARGS: $@"
 hostname
 date
 pwd
-python ANALYZER.py $@ --year YEAR
+python3 ANALYZER.py $@ --year YEAR
 date
 
 

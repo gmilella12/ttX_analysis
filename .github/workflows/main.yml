@@ -21,6 +21,6 @@ jobs:
 
       - name: Run test script
         run: |
-          python3 lepton_variables.py --input_file test_files/DoubleMuon_2018_A_output.root --output_dir analysis_output --year 2018 --is_data
-          python3 lepton_variables.py --input_file test_files/tt_dilepton_MC2018_ntuplizer_output.root --output_dir analysis_output --year 2018
+          python3 lepton_variables.py --input_files test_files/DoubleElectron_2018_A_output.root --output_dir analysis_output --year 2018 --is_data
+          python3 lepton_variables.py --input_files test_files/tt_dilepton_MC2018_ntuplizer_output.root --output_dir analysis_output --year 2018
 

@@ -4,8 +4,16 @@ TTZprimeToTT_M-4000:
   xSec: 0.00000016
   isUsed: true
 
+TZprimeToTT_M-4000:
+  xSec: 0.0000003
+  isUsed: true
+
 TTZprimeToTT_M-3000:
   xSec: 0.00000335
+  isUsed: true
+
+TZprimeToTT_M-3000:
+  xSec: 0.00000538
   isUsed: true
 
 ttX_mass3000:
@@ -14,6 +22,10 @@ ttX_mass3000:
 
 TTZprimeToTT_M-2500:
   xSec: 0.0000161
+  isUsed: true
+
+TZprimeToTT_M-2500:
+  xSec: 0.0000238
   isUsed: true
 
 ttX_mass2500:
@@ -32,12 +44,20 @@ TTZprimeToTT_M-2000:
   xSec: 0.0000850
   isUsed: true
 
+TZprimeToTT_M-2000:
+  xSec: 0.000114
+  isUsed: true
+
 ttX_mass2000:
   xSec: 0.0000850
   isUsed: true
 
 TTZprimeToTT_M-1750:
   xSec: 0.000207
+  isUsed: true
+
+TZprimeToTT_M-1750:
+  xSec: 0.000262
   isUsed: true
 
 ttX_mass1750:
@@ -48,6 +68,10 @@ TTZprimeToTT_M-1500:
   xSec: 0.000540
   isUsed: true 
 
+TZprimeToTT_M-1500:
+  xSec: 0.00062
+  isUsed: true 
+
 ttX_mass1500:
   xSec: 0.000540
   isUsed: true
@@ -56,12 +80,20 @@ TTZprimeToTT_M-1250:
   xSec: 0.00152
   isUsed: true
 
+TZprimeToTT_M-1250:
+  xSec: 0.00161
+  isUsed: true
+
 ttX_mass1250:
   xSec: 0.00152
   isUsed: true
 
 TTZprimeToTT_M-1000:
   xSec: 0.00469
+  isUsed: true
+
+TZprimeToTT_M-1000:
+  xSec: 0.00489
   isUsed: true
 
 ttX_mass1000:
@@ -76,6 +108,10 @@ TTZprimeToTT_M-750:
   xSec: 0.0164
   isUsed: true  
 
+TZprimeToTT_M-750:
+  xSec: 0.0143
+  isUsed: true
+
 ttX_mass600:
   xSec: 0.0408
   isUsed: true
@@ -83,6 +119,10 @@ ttX_mass600:
 TTZprimeToTT_M-500:
   xSec: 0.0756
   isUsed: true  
+
+TZprimeToTT_M-500:
+  xSec: 0.0578
+  isUsed: true 
   
 ttX_mass400:
   xSec: 0.160
@@ -101,15 +141,15 @@ tt_dilepton_HT500_NJets9:
   isUsed: false
 
 tt_semilepton:
-  xSec: 364.31
+  xSec: 366.29
   isUsed: true
  
 tt_dilepton:
-  xSec: 87.33
+  xSec: 88.51
   isUsed: true
 
 WW:
-  xSec: 118.7
+  xSec: 110.8
   isUsed: true
 
 WZ:
@@ -119,13 +159,33 @@ WZ:
 ZZ:
   xSec: 16.523
   isUsed: true
+
+tZq_ll:
+  xSec: 0.00758
+  isUsed: true
   
 tW:
-  xSec: 19.553
+  xSec: 19.6
   isUsed: true
  
 tbarW:
-  xSec: 19.553
+  xSec: 19.6
+  isUsed: true
+
+ST_t-channel_antitop:
+  xSec: 80.95
+  isUsed: true
+
+ST_t-channel_top:
+  xSec: 136.02
+  isUsed: true
+
+ST_s-channel_hadronicDecays:
+  xSec: 6.96
+  isUsed: true
+
+ST_s-channel_leptonDecays:
+  xSec: 3.36
   isUsed: true
 
 ttH_HTobb:
@@ -177,7 +237,7 @@ tttW:
   isUsed: true
 
 tttt:
-  xSec: 0.012
+  xSec: 0.0134
   isUsed: true
 
 qcd_Mu_20:
@@ -260,8 +320,24 @@ qcd_em_inf:
   xSec: 1350.0
   isUsed: true
 
+dy_to_ll_0J:
+  xSec: 5313
+  isUsed: true
+
+dy_to_ll_1J:
+  xSec: 955.8
+  isUsed: true
+
+dy_to_ll_2J:
+  xSec: 360.4
+  isUsed: true
+
 dy_m-50:
   xSec: 5343
+  isUsed: true
+
+dy_m-50_nlo:
+  xSec: 6077.2
   isUsed: true
 
 dy_m-10_50:
@@ -269,35 +345,35 @@ dy_m-10_50:
   isUsed: true
 
 dy_ht_100:
-  xSec: 140
+  xSec: 140.1
   isUsed: true
 
 dy_ht_200:
-  xSec: 161.1
+  xSec: 140.2
   isUsed: true
  
 dy_ht_400:
-  xSec: 48.66
+  xSec: 38.399
   isUsed: true
 
 dy_ht_600:
-  xSec: 6.968
+  xSec: 5.2127
   isUsed: true
 
 dy_ht_800:
-  xSec: 1.743 
+  xSec: 1.26567 
   isUsed: true
 
 dy_ht_1200:
-  xSec: 0.8052 
+  xSec: 0.5684304 
   isUsed: true
 
 dy_ht_2500:
-  xSec: 0.1933
+  xSec: 0.1331514
   isUsed: true
 
 dy_ht_inf:
-  xSec: 0.003468
+  xSec: 0.00297803565
   isUsed: true
   
 wj_ht_200:
@@ -328,4 +404,30 @@ wj_ht_inf:
   xSec: 0.1634
   isUsed: true
 
+qcd_ht_300:
+  xSec: 1550000
+  isUsed: true
 
+qcd_ht_500:
+  xSec: 323000
+  isUsed: true
+
+qcd_ht_700:
+  xSec: 30100
+  isUsed: true
+
+qcd_ht_1000:
+  xSec: 6330
+  isUsed: true
+
+qcd_ht_1500:
+  xSec: 1090
+  isUsed: true
+
+qcd_ht_2000:
+  xSec: 99.1
+  isUsed: true
+
+qcd_ht_inf:
+  xSec: 20.2
+  isUsed: true

@@ -1,0 +1,172 @@
+##### XSEC VALUES IN PB 
+
+TTZprimeToTT_M-4000:
+  xSec: 0.00000026
+  isUsed: true
+
+TTZprimeToTT_M-3000:
+  xSec: 0.00000464
+  isUsed: true
+
+ttX_mass3000:
+  xSec: 0.00000335
+  isUsed: true
+
+TTZprimeToTT_M-2500:
+  xSec: 0.0000213
+  isUsed: true
+
+ttX_mass2500:
+  xSec: 0.0000161
+  isUsed: true
+
+TTZprimeToTT_M-2250:
+  xSec: 0.0000363
+  isUsed: true
+
+ttX_mass2250:
+  xSec: 0.0000363
+  isUsed: true
+
+TTZprimeToTT_M-2000:
+  xSec: 0.000109
+  isUsed: true
+
+ttX_mass2000:
+  xSec: 0.0000850
+  isUsed: true
+
+TTZprimeToTT_M-1750:
+  xSec: 0.000262
+  isUsed: true
+
+ttX_mass1750:
+  xSec: 0.000207
+  isUsed: true
+
+TTZprimeToTT_M-1500:
+  xSec: 0.00066
+  isUsed: true 
+
+ttX_mass1500:
+  xSec: 0.000540
+  isUsed: true
+
+TTZprimeToTT_M-1250:
+  xSec: 0.00183
+  isUsed: true
+
+ttX_mass1250:
+  xSec: 0.00152
+  isUsed: true
+
+TTZprimeToTT_M-1000:
+  xSec: 0.00559
+  isUsed: true
+
+ttX_mass1000:
+  xSec: 0.00469
+  isUsed: true
+  
+ttX_mass800:
+  xSec: 0.013
+  isUsed: true
+
+TTZprimeToTT_M-750:
+  xSec: 0.0199
+  isUsed: true  
+
+ttX_mass600:
+  xSec: 0.0408
+  isUsed: true
+
+TTZprimeToTT_M-500:
+  xSec: 0.0895
+  isUsed: true  
+  
+ttX_mass400:
+  xSec: 0.160
+  isUsed: true
+
+tt_semilepton:
+  xSec: 403.25
+  isUsed: true
+ 
+tt_dilepton:
+  xSec: 97.44
+  isUsed: true
+
+#https://cms.cern.ch/iCMS/jsp/db_notes/noteInfo.jsp?cmsnoteid=CMS%20AN-2023/137
+tW_dilepton:
+  xSec: 35.99
+  isUsed: true
+
+tbarW_dilepton:
+  xSec: 36.05
+  isUsed: true
+
+ttH_HTobb:
+  xSec: 0.333
+  isUsed: true
+
+ttH_HToNonbb:
+  xSec: 0.241
+  isUsed: true
+
+#from https://cms.cern.ch/iCMS/jsp/db_notes/noteInfo.jsp?cmsnoteid=CMS%20AN-2022/103
+dy_m-50:
+  xSec: 6221.3
+  isUsed: true
+
+dy_to2L_m-50:
+  xSec: 5.448e+03
+  isUsed: true
+
+dy_to2L_m-50_1J:
+  xSec: 973.1
+  isUsed: true
+
+dy_to2L_m-50_2J:
+  xSec: 312.4
+  isUsed: true
+
+dy_to2L_m-50_3J:
+  xSec: 93.9
+  isUsed: true
+
+dy_to2L_m-50_4J:
+  xSec: 45.4
+  isUsed: true
+
+#https://cms.cern.ch/iCMS/jsp/db_notes/noteInfo.jsp?cmsnoteid=CMS%20AN-2023/137
+ttll_m-50_dilepton:
+  xSec: 0.086
+  isUsed: true
+
+ttlnu_1J_dilepton:
+  xSec: 0.250
+  isUsed: true
+
+qcd_4j_ht_600_800:
+  xSec: 1.336e+04
+  isUsed: true
+
+qcd_4j_ht_800_1000:
+  xSec: 3.046e+03
+  isUsed: true
+
+qcd_4j_ht_1000_1200:
+  xSec: 8.776e+02
+  isUsed: true
+
+qcd_4j_ht_1200_1500:
+  xSec: 3.818e+02
+  isUsed: true
+
+qcd_4j_ht_1500_2000:
+  xSec: 1.287e+02
+  isUsed: true
+
+qcd_4j_ht_2000:
+  xSec: 2.650e+01
+  isUsed: true

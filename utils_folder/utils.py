@@ -252,27 +252,27 @@ def xsec(process_name, is_sgn, year='2018'):
 
 def sum_gen_weights(input_file, process_name, is_sgn, year):
     if is_sgn:
-        with open(f"{NFS_PATH}/ttX_ntuplizer/sgn_{year}_central_hotvr/merged/sum_gen_weights.yaml") as sumGenWeights_file:
+        with open(f"{ROOT_DIR}/test_files/sum_gen_weights.yaml") as sumGenWeights_file:
             sumGenWeightsFile = yaml.load(sumGenWeights_file, Loader=SafeLoader)
             return sumGenWeightsFile[process_name]
         # with open(f"{NFS_PATH}/ttX_ntuplizer/sgn_{}_hotvr/merged/sum_gen_weights.yaml") as sumGenWeights_file:
         #     sumGenWeightsFile = yaml.load(sumGenWeights_file, Loader=SafeLoader)
         #     return sumGenWeightsFile[process_name]
     else:
-        with open(f"{NFS_PATH}/ttX_ntuplizer/bkg_{year}_hotvr/merged/sum_gen_weights.yaml") as sumGenWeights_file:
+        with open(f"{ROOT_DIR}/test_files/sum_gen_weights.yaml") as sumGenWeights_file:
             sumGenWeightsFile = yaml.load(sumGenWeights_file, Loader=SafeLoader)
             return sumGenWeightsFile[process_name]
         
 def sum_lhe_scale_weights(input_file, process_name, is_sgn, year):
     if is_sgn:
-        with open(f"{NFS_PATH}/ttX_ntuplizer/sgn_{year}_central_hotvr/merged/sum_lhe_scale_weights.yaml") as sumGenWeights_file:
+        with open(f"{ROOT_DIR}/test_files/sum_lhe_scale_weights.yaml") as sumGenWeights_file:
             sumGenWeightsFile = yaml.load(sumGenWeights_file, Loader=SafeLoader)
             return sumGenWeightsFile[process_name]
         # with open(f"{NFS_PATH}/ttX_ntuplizer/sgn_{}_hotvr/merged/sum_lhe_scale_weights.yaml") as sumGenWeights_file:
         #     sumGenWeightsFile = yaml.load(sumGenWeights_file, Loader=SafeLoader)
         #     return sumGenWeightsFile[process_name]
     else:
-        with open(f"{NFS_PATH}/ttX_ntuplizer/bkg_{year}_hotvr/merged/sum_lhe_scale_weights.yaml") as sumGenWeights_file:
+        with open(f"{ROOT_DIR}/test_files/sum_lhe_scale_weights.yaml") as sumGenWeights_file:
             sumGenWeightsFile = yaml.load(sumGenWeights_file, Loader=SafeLoader)
             return sumGenWeightsFile[process_name]
 

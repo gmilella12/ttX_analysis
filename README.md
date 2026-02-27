@@ -35,3 +35,16 @@ additional arguments are `is_sgn` or `is_data`.
 The first command generates the `ttX_analysis_condor_submission_new` and the executable file depending on the arguments given. 
 The ntuples are fetched automatically in the `ttX_analysis_submission_template.py`. You would need to modify the path according to where your ntuples are stored
 
+## Processing and merging files
+After the files have been analyzed with the scripts, they can be merged PER YEAR for the different input files using `hadd MERGED_FILENAME.root ALL_PRODUCED_FILES*.root`. Once a merged file is created, it needs to be firstly processed in order to correctly format and separate the uncertainties per year. Afterwards, processed files for different years need to be merged together. 
+
+The scripts used for these steps are: 
+```
+python histo_processing_theory_unc.py --INPUT_DIR --year YEAR --OUTPUT_DIR
+```
+which processes the theoretical uncertainties creating a copy of the merged file with the correct handling of them. One can specify the merged root file in the script, as well as the region and the variable under investigation. 
+
+```
+python histo_adding_all_years.py --INPUT_DIR --year YEAR --OUTPUT_DIR
+```
+which adds the processed files together for full Run2/3, processing correctly the uncorrelated or correlated systematics. The YEAR option can be `all_years_Run2` or `all_years_Run3`. One can specify the input directory (the naming should be similar for different years!), as well as the region and the variable under investigation.

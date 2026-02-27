@@ -27,35 +27,37 @@ LUMINOSITY = {
     '2022': 7875, '2022EE': 27000 
 }
 
-LEPTON_SELECTION = ['single_muon'] #['ee', 'mumu', 'emu'] #'single_muon'] #]
+LEPTON_SELECTION = ['ee', 'mumu', 'emu'] #'single_muon'] #]
 ELECTRON_ID_TYPE = "MVA"
 LEPTON_ID_MUON = "medium"
-LEPTON_ID_ELE = "loose"
+LEPTON_ID_ELE = "medium"
+if LEPTON_SELECTION[0] == 'single_muon':
+    LEPTON_ID_ELE = "loose"
 print(f'Muon ID: {LEPTON_ID_MUON}, Electron ID: {LEPTON_ID_ELE}')
 
 WEIGHTS_DICT = {
-    'ee': "event_weight * {} * {} * {} * {} * {}".format( 
+    'ee': "{} * {} * {} * {} * {}".format( 
         'trigger_weight_nominal',
         LEPTON_ID_ELE+"_"+ELECTRON_ID_TYPE+"_Electrons_weight_id_nominal", 
         LEPTON_ID_ELE+"_"+ELECTRON_ID_TYPE+"_Electrons_weight_recoPt_nominal",
         "tightRelIso_"+LEPTON_ID_MUON+"ID_Muons_weight_id_nominal",
           "tightRelIso_"+LEPTON_ID_MUON+"ID_Muons_weight_iso_nominal"),
 
-    'emu': "event_weight * {} * {} * {} * {} * {}".format(
+    'emu': "{} * {} * {} * {} * {}".format(
         'trigger_weight_nominal',
         LEPTON_ID_ELE+"_"+ELECTRON_ID_TYPE+"_Electrons_weight_id_nominal", 
         LEPTON_ID_ELE+"_"+ELECTRON_ID_TYPE+"_Electrons_weight_recoPt_nominal",
         "tightRelIso_"+LEPTON_ID_MUON+"ID_Muons_weight_id_nominal",
           "tightRelIso_"+LEPTON_ID_MUON+"ID_Muons_weight_iso_nominal"),
 
-    'mumu': "event_weight * {} * {} * {} * {} * {}".format(
+    'mumu': "{} * {} * {} * {} * {}".format(
         'trigger_weight_nominal',
         LEPTON_ID_ELE+"_"+ELECTRON_ID_TYPE+"_Electrons_weight_id_nominal", 
         LEPTON_ID_ELE+"_"+ELECTRON_ID_TYPE+"_Electrons_weight_recoPt_nominal",
         "tightRelIso_"+LEPTON_ID_MUON+"ID_Muons_weight_id_nominal",
           "tightRelIso_"+LEPTON_ID_MUON+"ID_Muons_weight_iso_nominal"),
 
-    'single_muon': "event_weight * {} * {} * {} * {}".format(
+    'single_muon': "{} * {} * {} * {}".format(
         # 'trigger_weight_nominal',
         LEPTON_ID_ELE+"_"+ELECTRON_ID_TYPE+"_Electrons_weight_id_nominal", 
         LEPTON_ID_ELE+"_"+ELECTRON_ID_TYPE+"_Electrons_weight_recoPt_nominal",
@@ -67,7 +69,8 @@ SYSTEMATIC_LABEL = 'nominal'
 AK4_JEC_SYSTEMATIC = 'nominal'
 BOOSTED_JEC_SYSTEMATIC = 'nominal'
 
-VARIABLES = ['pt', 'phi', 'eta', 'met_and_muon_pt', 'nmuons', 'nelectrons', 'delta_phi_bjet_muon', 'delta_phi_hotvr_muon'] #'invariant_mass_leading_subleading'] #, 'pt', 'phi', 'eta', 'charge']
+VARIABLES = ['invariant_mass_leading_subleading', 'pt', 'phi', 'eta', 'pfRelIso04_all'] #'invariant_mass_leading_subleading', 
+    # 'pt', 'phi', 'eta', 'met_and_muon_pt', 'nmuons', 'nelectrons', 'invariant_mass_leading_subleading']#] , 'delta_phi_bjet_muon', 'delta_phi_hotvr_muon'] #'] #, 'pt', 'phi', 'eta', 'charge']
 VARIABLES_BINNING = OrderedDict()
 VARIABLES_BINNING['pt'] = list(np.arange(0., 2005., 5))
 VARIABLES_BINNING['met_and_muon_pt'] = list(np.arange(0., 2005., 5))
@@ -79,13 +82,15 @@ VARIABLES_BINNING['invariant_mass_leading_subleading'] = list(np.arange(0., 1005
 VARIABLES_BINNING['charge'] = list(range(-1, 3))
 VARIABLES_BINNING['nmuons'] = list(range(0, 10))
 VARIABLES_BINNING['nelectrons'] = list(range(0, 10))
+VARIABLES_BINNING['pfRelIso04_all'] = list(np.arange(0., 0.2, 0.005))
+VARIABLES_BINNING['run'] = list(range(297000, 306500))
 
 BTAGGING_WP = 'loose'
 print(f'bTagging WP: {BTAGGING_WP}')
-NAK4, NBLOOSE = 1, 1
-NBOOSTED_JETS = 1
+NAK4, NBLOOSE = None, None
+NBOOSTED_JETS = 2
 BOOSTED_JETS = 'hotvr'
-Z_PEAK_CUT = None
+Z_PEAK_CUT = 'on' #'on' #None #
 NTAGGED_JETS = 1
 
 EVENT_SELECTION = f"after_2OS_{NAK4}ak4_outside_{BOOSTED_JETS}_{NBOOSTED_JETS}_{BOOSTED_JETS}"
@@ -101,7 +106,10 @@ if LEPTON_SELECTION[0] == 'single_muon':
 
 BDT_WPs = [0.5]
 
-Z_FIT_RESCALING = False
+Z_FIT_RESCALING = True
+if LEPTON_SELECTION[0] == 'single_muon':
+    Z_FIT_RESCALING = False
+print(f'DY-rescaling: {Z_FIT_RESCALING}')
 
 class Processor:
     def __init__(self, input_file, output_dir, year, is_data, is_sgn, weighting, systematic, ak4_systematic, boosted_systematic):
@@ -141,29 +149,10 @@ class Processor:
         root_df = ROOT.RDataFrame("Friends", str(self.input_file))
         if not self.is_data:
             print("Process: {}, XSec: {} pb, Sum of gen weights: {}".format(self.process_name, self.xsec, self.sum_gen_weights))
-            weights = f"genweight * puWeight * {self.xsec} * {LUMINOSITY[str(self.year)]} / {self.sum_gen_weights}"
-            bweights = "btagSFlight_deepJet_L_"+self.year+" * btagSFbc_deepJet_L_"+self.year
+            weights = f"genweight * {self.xsec} * {LUMINOSITY[str(self.year)]} / {self.sum_gen_weights}" #
+            root_df = root_df.Define("event_weight", weights)
+            print(f'Event weight: {weights}')
 
-            tot_weights = f"{bweights} * {weights}"
-            if self.year == '2017' or self.year == '2016' or self.year == '2016preVFP':
-                tot_weights += " * L1PreFiringWeight_Nom"
-            if Z_FIT_RESCALING:
-                if 'dy_' in self.process_name:
-                    tot_weights += f" * {self.z_fit_rescale[0]}"
-
-            if "ME" in SYSTEMATIC_LABEL[0:2]:
-                if root_df.HasColumn("nLHEScaleWeight"):
-                    nlhe = 1
-                    if not math.isnan(self.sum_lhe_scale_weights[nlhe]):
-                        tot_weights += f" * LHEScaleWeight[{nlhe}]"
-                        #normalization
-                        tot_weights, nlhe = me_uncertainties_handler(root_df, tot_weights, nlhe)
-                        tot_weights += f" / {self.sum_lhe_scale_weights[nlhe]}"
-            if "ISR" in SYSTEMATIC_LABEL or "FSR" in SYSTEMATIC_LABEL:
-                tot_weights += " * PSWeight[XXX]"
-            print(f"Tot. weights: {tot_weights}")
-
-            root_df = root_df.Define("event_weight", tot_weights)
         else: 
             print("Process: {}".format(self.process_name))
 
@@ -174,7 +163,7 @@ class Processor:
                 self.lepton_selection = ['single_muon']
             elif 'DoubleLepton' in self.process_name or 'MuonEG' in self.process_name:
                 self.lepton_selection = ['emu']
-            elif 'DoubleEG' in self.process_name or 'EGamma' in self.process_name:
+            elif 'DoubleEG' in self.process_name or 'EGamma' in self.process_name or 'Electron' in self.process_name:
                 self.lepton_selection = ['ee']
             elif 'Muon_' in self.process_name:
                 self.lepton_selection = ['mumu']
@@ -195,6 +184,9 @@ class Processor:
         # additional cut for jetVeto map
         if self.year == '2022' or self.year == '2022EE':
             root_df = adding_event_selection(root_df, "jetMapVeto==0")
+
+            if 'tbar' in self.process_name or 'tW' in self.process_name:
+                  self.process_name = self.process_name.replace('dilepton', '2l')
 
 
         # adding new columns
@@ -228,8 +220,17 @@ class Processor:
                 ak4_systematic=self.ak4_systematic, 
                 boosted_systematic=self.boosted_systematic, 
                 year=self.year, 
-                process=self.process_name
+                process=self.process_name,
+                is_data=self.is_data
             )
+            print("Number of pre-selected events:", root_df.Count().GetValue())
+            # === checking run number
+            # arrA = root_df_filtered.AsNumpy(["run","luminosityBlock","eventID"])
+            # A = set(zip(arrA["run"].tolist(),
+            # arrA["luminosityBlock"].tolist(),
+            # arrA["eventID"].tolist()))
+            # np.save("events_doublemuon.npy", np.array(list(A), dtype=np.uint64))
+            # print("events_doublemuon.npy")
 
             if lepton_selection == 'single_muon':
                 selection_string = (
@@ -262,30 +263,95 @@ class Processor:
                     root_df_filtered,
                     selection
                 )
+                print(f"Additional filter: {selection_string}")
 
+            # --- scale factors
             if not self.is_data:
-                WEIGHTS_DICT[lepton_selection] += " * bdt_sf_weight_bdt_nominal"
+                bweights = " btagSFlight_deepJet_L_"+self.year+" * btagSFbc_deepJet_L_"+self.year
+                sf_weights = f"{bweights} * puWeight * bdt_sf_nominal"
 
-                weight_formula = WEIGHTS_DICT[lepton_selection]
+                if self.year == '2017' or self.year == '2016' or self.year == '2016preVFP':
+                    sf_weights += " * L1PreFiringWeight_Nom"
+
+                if Z_FIT_RESCALING:
+                    if 'dy_' in self.process_name:
+                        sf_weights += f" * {self.z_fit_rescale[0]}"
+
+                if "ME" in SYSTEMATIC_LABEL[0:2]:
+                    if root_df.HasColumn("nLHEScaleWeight"):
+                        nlhe = "XXX"
+                        sf_weights += f" * LHEScaleWeight[{nlhe}]"
+                        #normalization
+                        sf_weights, nlhe = me_uncertainties_handler(root_df, sf_weights, nlhe)
+                        if not math.isnan(self.sum_lhe_scale_weights[nlhe]):
+                            sf_weights += f" / {self.sum_lhe_scale_weights[nlhe]}"
+                if "ISR" in SYSTEMATIC_LABEL or "FSR" in SYSTEMATIC_LABEL:
+                    sf_weights += " * PSWeight[XXX]"
+
+                sf_weights += f" * {WEIGHTS_DICT[lepton_selection]}"
                 if self.year == '2018':
-                    weight_formula += " * (!HEM_veto ? (1.0 / 3.0) : 1.0)"
+                    sf_weights += " * (!HEM_veto ? (1.0 / 3.0) : 1.0)"
 
-                root_df_filtered = root_df_filtered.Define("weight", weight_formula)
+                # --- trigger SFs for Run 3 (N.B. they are not calculated in the ntuplization but in the utils!!!)
+                if self.year == '2022' or self.year == '2022EE': 
+                    sf_weights = sf_weights.replace("trigger_weight_nominal", f"trigger_sf_{lepton_selection}")
                 # ---
+
+                print(f"SF weights: {sf_weights}")
+
+                root_df_filtered = root_df_filtered.Define("sf_weight", sf_weights)
+                root_df_filtered = root_df_filtered.Define("weight", f"event_weight * {sf_weights}" )
+            # ---
+
+            wp_str = str(BDT_WPs[0]).replace(".", "p")
+
+            TAGGED_REGION_CATEGORIES = [f'ex{NTAGGED_JETS}tag', '2tag', 'less1tag']
+            TAGGED_REGION_CUTS = {
+                'ex1tag':
+                    f'((selectedHOTVRJets_{self.boosted_systematic}_is_top_tagged_wp_{wp_str}[0]) ^ '
+                    f'(selectedHOTVRJets_{self.boosted_systematic}_is_top_tagged_wp_{wp_str}[1]))'
+                , 
+                '1tag':
+                    f'(selectedHOTVRJets_{self.boosted_systematic}_is_top_tagged_wp_' 
+                    f'{wp_str}[0] || '
+                    f'selectedHOTVRJets_{self.boosted_systematic}_is_top_tagged_wp_' 
+                    f'{wp_str}[1])'
+                ,
+                '2tag':
+                    f'(selectedHOTVRJets_{self.boosted_systematic}_is_top_tagged_wp_' 
+                    f'{wp_str}[0] && '
+                    f'selectedHOTVRJets_{self.boosted_systematic}_is_top_tagged_wp_' 
+                    f'{wp_str}[1])'
+                ,
+                'less1tag':
+                    f'(selectedHOTVRJets_{self.boosted_systematic}_is_top_tagged_wp_' 
+                    f'{wp_str}[0]==0 && '
+                    f'selectedHOTVRJets_{self.boosted_systematic}_is_top_tagged_wp_' 
+                    f'{wp_str}[1]==0)'
+            }
 
             for var in VARIABLES:
                 print('Variable --> {}'.format(var))
 
-                binning={
-                    'bins_x': len(VARIABLES_BINNING[var]) - 1, 
-                    'bins_x_edges': array('d', VARIABLES_BINNING[var]), 
-                    'bins_y': [], 
-                    'bins_y_edges': []
-                }
-                
                 histo_var = {}
                 histo_title = f"{self.process_name}_{var}"
-                histo_type = 'TH1'
+
+                if "vs" in var:
+                    binning={
+                        'bins_x': len(VARIABLES_BINNING['eta']) - 1, 
+                        'bins_x_edges': array('d', VARIABLES_BINNING['eta']), 
+                        'bins_y': len(VARIABLES_BINNING['phi']) - 1, 
+                        'bins_y_edges': array('d', VARIABLES_BINNING['phi']), 
+                    }
+                    histo_type = 'TH2'
+                else:
+                    binning={
+                        'bins_x': len(VARIABLES_BINNING[var]) - 1, 
+                        'bins_x_edges': array('d', VARIABLES_BINNING[var]), 
+                        'bins_y': [], 
+                        'bins_y_edges': []
+                    }
+                    histo_type = 'TH1'
 
                 variable_mappings = {
                     'invariant_mass_leading_subleading': f'dilepton_invariant_{lepton_selection}_mass',
@@ -294,6 +360,7 @@ class Processor:
                     'nelectrons': f'n{LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons',
                     'delta_phi_bjet_muon': f"delta_phi_BJets_{self.ak4_systematic}_{BTAGGING_WP}_outside_{BOOSTED_JETS}_and_tightRelIso_{LEPTON_ID_MUON}ID_Muons",
                     'delta_phi_hotvr_muon': f"delta_phi_selectedHOTVRJets_{self.boosted_systematic}_and_tightRelIso_{LEPTON_ID_MUON}ID_Muons",
+                    'run': 'run'
                 }
 
                 if var in variable_mappings:
@@ -311,9 +378,27 @@ class Processor:
                             weight='weight'
                     )
                     self.output_file.cd(f'{self.systematic}/{lepton_selection}')
+                    self.output_file.Get(f'{self.systematic}/{lepton_selection}').WriteObject(output_histo.GetPtr(), histo_title)
                     output_histo.Write()
                     print('Total events: {}'.format(output_histo.Integral()))
                     del output_histo
+
+                    for category in TAGGED_REGION_CATEGORIES:
+                        print('Category: {}'.format(category))
+                        histo_subtitle = histo_title + f"_{category}"
+                        output_histo = histo_creation(
+                            root_df_filtered.Filter(TAGGED_REGION_CUTS[category], TAGGED_REGION_CUTS[category]), 
+                            histo_subtitle, 
+                            histo_var, 
+                            binning=binning, 
+                            is_data=self.is_data, 
+                            histo_type=histo_type, 
+                            weight='weight'
+                        )
+                        self.output_file.cd(f'{self.systematic}/{lepton_selection}')
+                        output_histo.Write()
+                        print('Total events: {}'.format(output_histo.Integral()))
+                        output_histo.Delete()
 
                 else:
                     if lepton_selection == 'emu':
@@ -321,9 +406,22 @@ class Processor:
                             ['electron', 'muon'],
                             [f'{LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_{var}_leading', f'tightRelIso_{LEPTON_ID_MUON}ID_Muons_{var}_leading']
                         ):
+                            if 'pfRelIso04_all' == var and lepton == 'electron':
+                                continue
+
                             histo_title = f"{self.process_name}_{lepton}_{var}"
                             histo_var['var_x'] = lepton_label
                             print(lepton_label)
+
+                            if 'eta_vs_phi' in var:
+                                histo_var['var_x'] = lepton_label.replace('eta_vs_phi', 'eta')
+                                histo_var['var_y'] = lepton_label.replace('eta_vs_phi', 'phi')
+                                binning={
+                                    'bins_x': len(VARIABLES_BINNING['eta']) - 1, 
+                                    'bins_x_edges': array('d', VARIABLES_BINNING['eta']), 
+                                    'bins_y': len(VARIABLES_BINNING['phi']) - 1, 
+                                    'bins_y_edges': array('d', VARIABLES_BINNING['phi']),
+                                }
 
                             output_histo = histo_creation(
                                 root_df_filtered, 
@@ -338,18 +436,49 @@ class Processor:
                             output_histo.Write()
                             print('Total events: {}'.format(output_histo.Integral()))
                             del output_histo
+
+                            for category in TAGGED_REGION_CATEGORIES:
+                                print('Category: {}'.format(category))
+                                histo_subtitle = histo_title + f"_{category}"
+                                output_histo = histo_creation(
+                                    root_df_filtered.Filter(TAGGED_REGION_CUTS[category], TAGGED_REGION_CUTS[category]), 
+                                    histo_subtitle, 
+                                    histo_var, 
+                                    binning=binning, 
+                                    is_data=self.is_data, 
+                                    histo_type=histo_type, 
+                                    weight='weight'
+                                )
+                                self.output_file.cd(f'{self.systematic}/{lepton_selection}')
+                                output_histo.Write()
+                                print('Total events: {}'.format(output_histo.Integral()))
+                                output_histo.Delete()
                             continue
                     else:
                         jet_multiplicity = ['leading', 'subleading'] if lepton_selection != 'single_muon' else ['leading']
 
                         for ijet, jet in enumerate(jet_multiplicity):
                             histo_title = f"{self.process_name}_{jet}_{var}"
+
+                            var_name = ''
                             if lepton_selection == 'ee':
-                                histo_var['var_x'] = f'{LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_{var}_{jet}'
+                                var_name = f'{LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_{var}_{jet}'
+                                if 'pfRelIso04_all' == var: 
+                                    continue
                             elif lepton_selection == 'mumu' or lepton_selection == 'single_muon':
-                                if (var == 'dz' or var == 'dxy'): continue
-                                histo_var['var_x'] = f'tightRelIso_{LEPTON_ID_MUON}ID_Muons_{var}_{jet}'
-                            else: continue
+                                var_name = f'tightRelIso_{LEPTON_ID_MUON}ID_Muons_{var}_{jet}'
+
+                            histo_var['var_x'] = var_name
+
+                            if 'eta_vs_phi' in var:
+                                histo_var['var_x'] = var_name.replace('eta_vs_phi', 'eta')
+                                histo_var['var_y'] = var_name.replace('eta_vs_phi', 'phi')
+                                binning={
+                                    'bins_x': len(VARIABLES_BINNING['eta']) - 1, 
+                                    'bins_x_edges': array('d', VARIABLES_BINNING['eta']), 
+                                    'bins_y': len(VARIABLES_BINNING['phi']) - 1, 
+                                    'bins_y_edges': array('d', VARIABLES_BINNING['phi']),
+                                }
 
                             output_histo = histo_creation(
                                 root_df_filtered, 
@@ -361,9 +490,27 @@ class Processor:
                                 weight='weight'
                             )
                             self.output_file.cd(f'{self.systematic}/{lepton_selection}')
+                            self.output_file.Get(f'{self.systematic}/{lepton_selection}').WriteObject(output_histo.GetPtr(), histo_title)
                             output_histo.Write()
                             print('Total events: {}'.format(output_histo.Integral()))
                             del output_histo
+
+                            for category in TAGGED_REGION_CATEGORIES:
+                                print('Category: {}'.format(category))
+                                histo_subtitle = histo_title + f"_{category}"
+                                output_histo = histo_creation(
+                                    root_df_filtered.Filter(TAGGED_REGION_CUTS[category], TAGGED_REGION_CUTS[category]), 
+                                    histo_subtitle, 
+                                    histo_var, 
+                                    binning=binning, 
+                                    is_data=self.is_data, 
+                                    histo_type=histo_type, 
+                                    weight='weight'
+                                )
+                                self.output_file.cd(f'{self.systematic}/{lepton_selection}')
+                                output_histo.Write()
+                                print('Total events: {}'.format(output_histo.Integral()))
+                                output_histo.Delete()
 
 
 def main(input_files, output_dir, year, is_data, is_sgn, weighting, systematic, ak4_systematic, boosted_systematic):
@@ -371,12 +518,12 @@ def main(input_files, output_dir, year, is_data, is_sgn, weighting, systematic, 
     for input_file in input_files:
         # testing
         # input_file = "/data/dust/user/gmilella/ttX_ntuplizer/bkg_2016_hotvr/merged/ttH_HToNonbb_MC2018_ntuplizer_merged.root"
-        # input_file = "/data/dust/user/gmilella/ttX_ntuplizer/bkg_2016preVFP_hotvr/merged/dy_ht_1200_MC2016preVFP_ntuplizer_1_merged.root"
+        # input_file = "/data/dust/user/gmilella/ttX_ntuplizer/bkg_2022_hotvr/merged/dy_to2L_m-50_2J_MC2022_ntuplizer_merged.root"
         # input_file = "/data/dust/user/gmilella/ttX_ntuplizer/bkg_2018_hotvr/merged/dy_ht_1200_MC2018_ntuplizer_1_merged.root"
         # input_file = "/data/dust/user/gmilella/ttX_ntuplizer/sgn_2018_central_hotvr/merged/TTZprimeToTT_M-1500_Width4_1_merged.root"
         # input_file = "/data/dust/user/gmilella/ttX_ntuplizer/data_2018_hotvr/merged/SingleMuon_2018_D_8_merged.root"
-        # input_file = "/data/dust/user/gmilella/ttX_ntuplizer/data_2016_hotvr/merged/tt_dilepton_MC2022_ntuplizer_10_merged.root"
-        # input_file = "/data/dust/user/gmilella/ttX_ntuplizer/bkg_2022_hotvr/merged/tt_dilepton_MC2022_ntuplizer_1_merged.root" 
+        # input_file = "/data/dust/user/gmilella/ttX_ntuplizer/data_2022_hotvr/merged/DoubleEG_2022_C_4_merged.root"
+        # input_file = "/data/dust/user/gmilella/ttX_ntuplizer/bkg_2022EE_hotvr/merged/tt_dilepton_MC2022EE_ntuplizer_1_merged.root" 
 
         print(f"Starting processing for file: {input_file}")
         processor = Processor(input_file, output_dir, year, is_data, is_sgn, weighting, systematic, ak4_systematic, boosted_systematic)

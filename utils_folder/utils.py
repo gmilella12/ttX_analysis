@@ -12,23 +12,28 @@ import ROOT
 ROOT.ROOT.EnableImplicitMT()
 
 ROOT_DIR = os.getcwd()
-cpp_functions_header = "{}/cpp_functions_header.h".format(ROOT_DIR)
-if not os.path.isfile(cpp_functions_header):
-    print('No cpp header found!')
-    sys.exit()
-ROOT.gInterpreter.Declare('#include "{}"'.format(cpp_functions_header))
 
-cpp_scale_factor_header = "{}/cpp_scale_factor_header.h".format(ROOT_DIR)
-if not os.path.isfile(cpp_scale_factor_header):
-    print('No cpp_scale_factor_header found!')
-    sys.exit()
-ROOT.gInterpreter.Declare('#include "{}"'.format(cpp_scale_factor_header))
+headers = {
+    "cpp_functions_header": f"{ROOT_DIR}/cpp_functions_header.h",
+    "cpp_top_mistagging_scale_factor_header": f"{ROOT_DIR}/cpp_top_mistagging_scale_factor_header.h",
+    "cpp_trigger_scale_factor_header": f"{ROOT_DIR}/cpp_trigger_scale_factor_header.h",
+    "cpp_puID_scale_factor_header": f"{ROOT_DIR}/cpp_puID_scale_factor_header.h",
+    "cpp_mc_scaling_header": f"{ROOT_DIR}/cpp_mc_scaling_header.h"
+}
+
+for name, path in headers.items():
+    if not os.path.isfile(path):
+        print(f"Error: Header file '{path}' not found!")
+        sys.exit()
+    else:
+        print(f"Found header file: {path}")
+        ROOT.gInterpreter.Declare(f'#include "{path}"')
 
 NFS_PATH = os.environ.get('NFS', '/data/dust/user/gmilella')
 
 B_TAGGING_WP = {
     '2016preVFP': 
-        {'loose': 0.0614, 'medium': 0.3093, 'tight': 0.7221}, #https://btv-wiki.docs.cern.ch/ScaleFactors/UL2016preVFP/
+        {'loose': 0.0508, 'medium': 0.2598, 'tight': 0.6502}, #https://btv-wiki.docs.cern.ch/ScaleFactors/UL2016preVFP/
     '2016': 
         {'loose': 0.0480, 'medium': 0.2489, 'tight': 0.6377}, #https://btv-wiki.docs.cern.ch/ScaleFactors/UL2016postVFP/
     '2017': 
@@ -41,75 +46,48 @@ B_TAGGING_WP = {
         {'loose': 0.0614, 'medium': 0.3196, 'tight': 0.73}, #https://btv-wiki.docs.cern.ch/ScaleFactors/Run3Summer22EE/
 }
 
-TRIGGER_SEL = {
-    '2016preVFP': 
-        {'ee': 'trigger_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', 
-         'mumu': '(trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL || trigger_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL)', 
-         'emu': ' (trigger_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL || trigger_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL) ',
-         'single_muon': 'trigger_HLT_IsoMu24 || trigger_HLT_IsoTkMu24'
-         }, 
-    '2016': 
-        {'ee': 'trigger_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', 
-         'mumu': '(trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL || trigger_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL)', 
-         'emu': ' (trigger_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL || trigger_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL)',
-         'single_muon': 'trigger_HLT_IsoMu24 || trigger_HLT_IsoTkMu24'
-         },
-    '2017': 
-        {'ee': 'trigger_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL', 
-         'mumu': ' trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8', 
-         'emu': '(trigger_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL || trigger_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ)',
-         'single_muon': 'trigger_HLT_IsoMu27'
-         },
-    '2018': 
-        {'ee': 'trigger_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL', 
-         'mumu': 'trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', 
-         'emu': '(trigger_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL || trigger_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ)',
-         'single_muon': 'trigger_HLT_IsoMu24'
-         }, 
-    '2022': 
-        {'ee':'(trigger_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ || trigger_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL)', 
-         'mumu': 'trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', 
-         'emu': '(trigger_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL || trigger_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ)',
-         'single_muon': 'trigger_HLT_IsoMu24'
-         }, 
-    '2022EE': 
-        {'ee':'(trigger_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ || trigger_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL)', 
-         'mumu': 'trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', 
-         'emu': '(trigger_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL || trigger_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ)',
-         'single_muon': 'trigger_HLT_IsoMu24'
-         }, 
-}
-
 # TRIGGER_SEL = {
 #     '2016preVFP': 
-#         {'ee': 'trigger_ee_flag', 
-#          'mumu': 'trigger_mumu_flag', 
-#          'emu': 'trigger_emu_flag '
+#         {'ee': 'trigger_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', 
+#          'mumu': '(trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL || trigger_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL)', 
+#          'emu': ' (trigger_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL || trigger_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL) ',
+#          'single_muon': 'trigger_HLT_IsoMu24', #'(trigger_HLT_IsoMu24 || trigger_HLT_IsoTkMu24)'
+#          'or': '(trigger_ee_flag || trigger_emu_flag || trigger_mumu_flag)'
 #          }, 
 #     '2016': 
-#         {'ee': 'trigger_ee_flag', 
-#          'mumu': 'trigger_mumu_flag', 
-#          'emu': 'trigger_emu_flag'
+#         {'ee': 'trigger_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', 
+#          'mumu': '(trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL || trigger_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL)', 
+#          'emu': ' (trigger_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL || trigger_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL)',
+#          'single_muon': 'trigger_HLT_IsoMu24', #'(trigger_HLT_IsoMu24 || trigger_HLT_IsoTkMu24)'
+#          'or': '(trigger_ee_flag || trigger_emu_flag || trigger_mumu_flag)'
 #          },
 #     '2017': 
-#         {'ee': 'trigger_ee_flag', 
-#          'mumu': 'trigger_mumu_flag', 
-#          'emu': 'trigger_emu_flag'
+#         {'ee': 'trigger_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL', 
+#          'mumu': ' trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8', 
+#          'emu': '(trigger_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL || trigger_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ)',
+#          'single_muon': 'trigger_HLT_IsoMu27',
+#         'or': '(trigger_ee_flag || trigger_emu_flag || trigger_mumu_flag)'
 #          },
 #     '2018': 
-#         {'ee': 'trigger_ee_flag', 
-#          'mumu': 'trigger_mumu_flag', 
-#          'emu': 'trigger_emu_flag'
+#         {'ee': 'trigger_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL', 
+#          'mumu': 'trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', 
+#          'emu': '(trigger_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL || trigger_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ)',
+#          'single_muon': 'trigger_HLT_IsoMu24',
+#          'or': '(trigger_ee_flag || trigger_emu_flag || trigger_mumu_flag)'
 #          }, 
 #     '2022': 
-#         {'ee':'trigger_ee_flag', 
-#          'mumu': 'trigger_mumu_flag', 
-#          'emu': 'trigger_emu_flag'
+#         {'ee':'(trigger_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ || trigger_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL)', 
+#          'mumu': 'trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', 
+#          'emu': '(trigger_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL || trigger_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ)',
+#          'single_muon': 'trigger_HLT_IsoMu24',
+#          'or': '(trigger_ee_flag || trigger_emu_flag || trigger_mumu_flag)'
 #          }, 
 #     '2022EE': 
-#         {'ee':'trigger_ee_flag', 
-#          'mumu': 'trigger_mumu_flag', 
-#          'emu': 'trigger_emu_flag'
+#         {'ee':'(trigger_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ || trigger_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL)', 
+#          'mumu': 'trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', 
+#          'emu': '(trigger_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL || trigger_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ)',
+#          'single_muon': 'trigger_HLT_IsoMu24',
+#          'or': '(trigger_ee_flag || trigger_emu_flag || trigger_mumu_flag)'
 #          }, 
 # }
 
@@ -172,7 +150,7 @@ for jet_flag in JET_COMPOSITION_FLAGS_UNIQUE:
         PURE_QCD_FLAGS += 'selectedHOTVRJets_nominal_'+jet_flag + '||'
 
 
-JET_COMPOSITION_FLAGS = {
+JET_COMPOSITION_FLAGS_MERGED = {
         'pure_qcd': PURE_QCD_FLAGS[:-2], 
         'hadronic_t': HADRONIC_T_FLAG,
         'hadronic_w': HADRONIC_W_FLAG, 
@@ -191,51 +169,56 @@ Z_PEAK_LOW_EDGE, Z_PEAK_HIGH_EDGE = 80., 101.
 def parsing_file(input_file):
     print("Processing file: {}".format(input_file))
     input_file = input_file.rsplit("/", 2)[-1]
-    print(input_file)
+
+    # Match ending in _MC
     pattern = re.compile(r"([^/]*?)_MC")
     match = pattern.search(str(input_file))
     if match:
-        print("Process name: {}".format(match.group(1)))
+        # print("Process name: {}".format(match.group(1)))
         return match.group(1)
-    else:
-        pattern = re.compile(r"([^/]*?)_ntuplizer")
-        match = pattern.search(str(input_file))
-        if match:
-            print("Process name: {}".format(match.group(1)))
-            return match.group(1)
-        else:
-            pattern = re.compile(r"([^/]*?)(?:_\d+)?_output")
-            match = pattern.search(str(input_file))
-            if match:
-                print("Process name: {}".format(match.group(1)))
-                return match.group(1)
-            else:
-                # pattern = re.compile(r"([^/]*?)_merged")
-                # match = pattern.search(str(input_file))
-                # if match:
-                #     print("Process name: {}".format(match.group(1)))
-                #     return match.group(1)
-                pattern = r"(_[0-9]+_merged\.root)$"
-                name = re.sub(pattern, '', str(input_file))
-                if name != str(input_file):
-                    print("Process name: {}".format(name))
-                    return re.sub(pattern, '', str(input_file))
-                else:
-                    pattern = r"(_merged\.root)$"
-                    name = re.sub(pattern, '', str(input_file))
-                    if name != str(input_file):
-                        print("Process name: {}".format(name))
-                        return re.sub(pattern, '', str(input_file))
-                    else:
-                        print("No process name found.")
-                        sys.exit()
+
+    # Match ending in _ntuplizer
+    pattern = re.compile(r"([^/]*?)_ntuplizer")
+    match = pattern.search(str(input_file))
+    if match:
+        # print("Process name: {}".format(match.group(1)))
+        return match.group(1)
+
+    # Match ending in _output or _123_output
+    pattern = re.compile(r"([^/]*?)(?:_\d+)?_output")
+    match = pattern.search(str(input_file))
+    if match:
+        # print("Process name: {}".format(match.group(1)))
+        return match.group(1)
+
+    # Match pattern like TuneCP5
+    pattern = re.compile(r"([^/]*?)_TuneCP5")
+    match = pattern.search(str(input_file))
+    if match:
+        # print("Process name: {}".format(match.group(1)))
+        return match.group(1)
+
+    # Match ending in _<number>_merged.root
+    pattern = r"(_[0-9]+_merged\.root)$"
+    name = re.sub(pattern, '', str(input_file))
+    if name != str(input_file):
+        # print("Process name: {}".format(name))
+        return name
+
+    # Match ending in _merged.root
+    pattern = r"(_merged\.root)$"
+    name = re.sub(pattern, '', str(input_file))
+    if name != str(input_file):
+        # print("Process name: {}".format(name))
+        return name
+
+    print("No process name found.")
+    sys.exit()
 
 def xsec(process_name, is_sgn, year='2018'):
     if is_sgn:
-        pattern = r"_Width.*"
-        process_name = re.sub(pattern, '', process_name, flags=re.I)
-
-    print(process_name)
+        process_name = re.sub(r"_Width.*", '', process_name, flags=re.I)
+        process_name = re.sub(r"_w.*", '', process_name, flags=re.I)
 
     if year == '2022' or year == '2022EE':
         with open('{}/xsec_Run3.yaml'.format(ROOT_DIR)) as xsec_file:
@@ -252,34 +235,33 @@ def xsec(process_name, is_sgn, year='2018'):
 
 def sum_gen_weights(input_file, process_name, is_sgn, year):
     if is_sgn:
-        with open(f"{ROOT_DIR}/test_files/sum_gen_weights.yaml") as sumGenWeights_file:
+        with open(f"{NFS_PATH}/ttX_ntuplizer/sgn_{year}_central_hotvr/merged/sum_gen_weights.yaml") as sumGenWeights_file:
             sumGenWeightsFile = yaml.load(sumGenWeights_file, Loader=SafeLoader)
             return sumGenWeightsFile[process_name]
         # with open(f"{NFS_PATH}/ttX_ntuplizer/sgn_{}_hotvr/merged/sum_gen_weights.yaml") as sumGenWeights_file:
         #     sumGenWeightsFile = yaml.load(sumGenWeights_file, Loader=SafeLoader)
         #     return sumGenWeightsFile[process_name]
     else:
-        with open(f"{ROOT_DIR}/test_files/sum_gen_weights.yaml") as sumGenWeights_file:
+        with open(f"{NFS_PATH}/ttX_ntuplizer/bkg_{year}_hotvr/merged/sum_gen_weights.yaml") as sumGenWeights_file:
             sumGenWeightsFile = yaml.load(sumGenWeights_file, Loader=SafeLoader)
             return sumGenWeightsFile[process_name]
         
 def sum_lhe_scale_weights(input_file, process_name, is_sgn, year):
     if is_sgn:
-        with open(f"{ROOT_DIR}/test_files/sum_lhe_scale_weights.yaml") as sumGenWeights_file:
+        with open(f"{NFS_PATH}/ttX_ntuplizer/sgn_{year}_central_hotvr/merged/sum_lhe_scale_weights.yaml") as sumGenWeights_file:
             sumGenWeightsFile = yaml.load(sumGenWeights_file, Loader=SafeLoader)
             return sumGenWeightsFile[process_name]
         # with open(f"{NFS_PATH}/ttX_ntuplizer/sgn_{}_hotvr/merged/sum_lhe_scale_weights.yaml") as sumGenWeights_file:
         #     sumGenWeightsFile = yaml.load(sumGenWeights_file, Loader=SafeLoader)
         #     return sumGenWeightsFile[process_name]
     else:
-        with open(f"{ROOT_DIR}/test_files/sum_lhe_scale_weights.yaml") as sumGenWeights_file:
+        with open(f"{NFS_PATH}/ttX_ntuplizer/bkg_{year}_hotvr/merged/sum_lhe_scale_weights.yaml") as sumGenWeights_file:
             sumGenWeightsFile = yaml.load(sumGenWeights_file, Loader=SafeLoader)
             return sumGenWeightsFile[process_name]
 
 def Z_peak_fit_results(year):
-    csv_file_path = f"{NFS_PATH}/ttX_post_ntuplization_analysis_output/analysis_outputs/all_Run2/lepton_variables"
-    if year == '2022' or year == '2022EE':
-        csv_file_path = f"{NFS_PATH}/ttX_post_ntuplization_analysis_output/analysis_outputs/all_Run3/lepton_variables"
+    # calculating with another script in the postprocessing (geometric mean between ee and mumu channel)
+    csv_file_path = f"DY_normalization_offset/{year}/"
 
     with open(f"{csv_file_path}/Z_peak_fit_results.csv", mode="r") as csv_file:
         reader = csv.reader(csv_file)
@@ -287,7 +269,7 @@ def Z_peak_fit_results(year):
         values = next(reader)
     return values
 
-def creation_output_file(input_file, output_dir, analyzer, year, event_selection, lepton_selection, systematic):
+def creation_output_file(input_file, output_dir, analyzer, year, event_selection, lepton_selection, systematic, miscellanea=''):
     # bkg samples are divided in chunks
     # so the output files should reflect this division
     match = re.search(r'([^/]+)\.root$', str(input_file))
@@ -305,9 +287,8 @@ def creation_output_file(input_file, output_dir, analyzer, year, event_selection
 
     output_path = os.path.join(
         output_dir_path, 
-        f"{process_filename}_{analyzer}_{event_selection}_{systematic}.root"
+        f"{process_filename}_{analyzer}_{event_selection}_{systematic}{miscellanea}.root"
     )
-    # output_path = os.path.join(output_dir_path, "{}_{}_{}.root".format(process_filename, analyzer, systematic))
 
     file_out = ROOT.TFile(output_path, 'RECREATE')
     systematic_dir = file_out.mkdir(systematic)
@@ -341,17 +322,31 @@ def creation_output_h5_file(input_file, output_dir, analyzer, year, event_select
     return output_path
 
 def histo_creation(
-        root_df, histo_title, histo_var, 
+        root_df, 
+        histo_title, 
+        histo_var, 
         binning={'bins_x': [], 'bins_x_edges': [], 'bins_y': [], 'bins_y_edges': []}, 
-        is_data=False, histo_type='TH1', weight=''
+        is_data=False, 
+        histo_type='TH1', 
+        weight='',
+        additional_filter=''
     ):
 
+    if additional_filter:
+        root_df = root_df.Filter(additional_filter, additional_filter)
+
     if histo_type == 'TH1':
-        if is_data and 'tagging_efficiency' not in weight or weight==None:
-            output_histo = root_df.Histo1D(
-                (histo_title, '', binning['bins_x'], binning['bins_x_edges']), 
-                histo_var['var_x']
-            )
+        if is_data:
+            if weight != None and 'tagging_efficiency' in weight:
+                output_histo = root_df.Histo1D(
+                    (histo_title, '', binning['bins_x'], binning['bins_x_edges']), 
+                    histo_var['var_x'], weight
+                )
+            else:
+                output_histo = root_df.Histo1D(
+                    (histo_title, '', binning['bins_x'], binning['bins_x_edges']), 
+                    histo_var['var_x']
+                )
         else:
             if weight==None:
                 output_histo = root_df.Histo1D(
@@ -364,12 +359,20 @@ def histo_creation(
                     histo_var['var_x'], weight
                 )
     else:
-        if is_data and 'tagging_efficiency' not in weight or weight==None:
-            output_histo = root_df.Histo2D(
-                (histo_title, '', binning['bins_x'], binning['bins_x_edges'], binning['bins_y'], binning['bins_y_edges']), 
-                histo_var['var_x'], 
-                histo_var['var_y']
-            )
+        if is_data:
+            if weight != None and 'tagging_efficiency' in weight:
+                output_histo = root_df.Histo2D(
+                    (histo_title, '', binning['bins_x'], binning['bins_x_edges'], binning['bins_y'], binning['bins_y_edges']), 
+                    histo_var['var_x'], 
+                    histo_var['var_y'], 
+                    weight
+                )
+            else: 
+                output_histo = root_df.Histo2D(
+                    (histo_title, '', binning['bins_x'], binning['bins_x_edges'], binning['bins_y'], binning['bins_y_edges']), 
+                    histo_var['var_x'], 
+                    histo_var['var_y'], 
+                )
         else:
             if weight == None: 
                 output_histo = root_df.Histo2D(
@@ -387,6 +390,36 @@ def histo_creation(
 
     return output_histo
 
+
+def make_cutflow_histograms(
+    root_df, 
+    filter_conditions, 
+    weight_column="weight", 
+    cutflow_name="cutflow", 
+    use_weights=True
+):
+    cutflow_unweighted = []
+    cutflow_weighted = []
+
+    current_df = root_df
+    for i, condition in enumerate(filter_conditions):
+        label = f"Cut_{i+1}"
+        current_df = current_df.Filter(condition, label)
+
+        # Count unweighted
+        n_unweighted = current_df.Count()
+        cutflow_unweighted.append((label, n_unweighted))
+
+        # Count weighted if applicable
+        if use_weights:
+            n_weighted = current_df.Define("w", weight_column).Sum("w")
+            cutflow_weighted.append((label, n_weighted))
+
+    if use_weights:
+        return cutflow_unweighted, cutflow_weighted
+    else:
+        return cutflow_unweighted, None
+
 def event_selection(
         root_df, 
         lepton_selection='ee', 
@@ -402,102 +435,233 @@ def event_selection(
         ak4_systematic='nominal', 
         boosted_systematic='nominal',
         year='2018', 
-        process='DoubleMuon'
+        process='DoubleMuon', 
+        return_cutflow=False,
+        weight_column='',
+        is_data=False
     ):
 
+    TRIGGER_SEL = {
+        '2016preVFP': 
+            {
+                'DoubleMuon': '(trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL || trigger_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL)',
+                'SingleMuon': '(trigger_HLT_IsoMu24 || trigger_HLT_IsoTkMu24) && !(trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL || trigger_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL || trigger_emu_flag)',
+                'SingleElectron': 'trigger_HLT_Ele32_WPTight_Gsf && !(trigger_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ || trigger_emu_flag)',
+                'DoubleLepton': '(trigger_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL || trigger_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL)',
+                'DoubleEG': 'trigger_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
+                'ee': 'trigger_ee_flag',
+                'emu': 'trigger_emu_flag',
+                'mumu': 'trigger_mumu_flag',
+                'single_muon': 'trigger_HLT_IsoMu24'
+            }, 
+        '2016': 
+            {
+                'DoubleMuon': '(trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL || trigger_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL)',
+                'DoubleMuon_2016_H': '(trigger_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ || trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ)',
+                'SingleMuon': '(trigger_HLT_IsoMu24 || trigger_HLT_IsoTkMu24) && !(trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL || trigger_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL || trigger_emu_flag)',
+                'SingleMuon_2016_H': '(trigger_HLT_IsoMu24 || trigger_HLT_IsoTkMu24) && !(trigger_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ || trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ || trigger_emu_flag)',
+                'SingleElectron': 'trigger_HLT_Ele32_WPTight_Gsf && !(trigger_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ || trigger_emu_flag)',
+                'DoubleLepton': '(trigger_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL || trigger_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL)',
+                'DoubleLepton_2016_H': '(trigger_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ || trigger_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ)',
+                'DoubleEG': 'trigger_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
+                'ee': 'trigger_ee_flag',
+                'emu': 'trigger_emu_flag',
+                'mumu': 'trigger_mumu_flag',
+                'single_muon': 'trigger_HLT_IsoMu24'
+            },
+        '2017': 
+            {
+                'DoubleMuon': '(trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8 || trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8)',
+                'SingleMuon': 'trigger_HLT_IsoMu27 && !(trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8 || trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8 || trigger_emu_flag)',
+                'SingleElectron': 'trigger_HLT_Ele32_WPTight_Gsf && !(trigger_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL || trigger_HLT_DoubleEle33_CaloIdL_MW || trigger_HLT_DoubleEle25_CaloIdL_MW || trigger_emu_flag)',
+                'DoubleLepton': '(trigger_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL || trigger_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ)',
+                'DoubleEG': '(trigger_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL || trigger_HLT_DoubleEle33_CaloIdL_MW || trigger_HLT_DoubleEle25_CaloIdL_MW)', 
+                'ee': 'trigger_ee_flag',
+                'emu': 'trigger_emu_flag',
+                'mumu': 'trigger_mumu_flag',
+                'single_muon': 'trigger_HLT_IsoMu27'
+            },
+        '2018': 
+            {
+                'DoubleMuon': 'trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8',
+                'SingleMuon': 'trigger_HLT_IsoMu24 && !(trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8 || trigger_emu_flag)',
+                'DoubleLepton': '(trigger_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL || trigger_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ)',
+                'DoubleEG': 'trigger_ee_flag && !trigger_emu_flag',
+                'ee': 'trigger_ee_flag',
+                'emu': 'trigger_emu_flag',
+                'mumu': 'trigger_mumu_flag',
+                'single_muon': 'trigger_HLT_IsoMu24'
+            }, 
+        '2022': 
+            {
+                'DoubleMuon': 'trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8',
+                'Muon': 'trigger_mumu_flag && !trigger_emu_flag',
+                'DoubleLepton': 'trigger_emu_flag',
+                'DoubleEG': 'trigger_ee_flag && !trigger_emu_flag',
+                'ee': 'trigger_ee_flag',
+                'emu': 'trigger_emu_flag',
+                'mumu': 'trigger_mumu_flag',
+                'single_muon': 'trigger_HLT_IsoMu24'
+            }, 
+        '2022EE': 
+            {
+                'Muon': 'trigger_mumu_flag && !trigger_emu_flag',
+                'DoubleLepton': 'trigger_emu_flag',
+                'DoubleEG': 'trigger_ee_flag && !trigger_emu_flag',
+                'ee': 'trigger_ee_flag',
+                'emu': 'trigger_emu_flag',
+                'mumu': 'trigger_mumu_flag',
+                'single_muon': 'trigger_HLT_IsoMu24'
+            }, 
+        }
+
     # --- trigger selection
-    filter_conditions = [f"{TRIGGER_SEL[year][lepton_selection]}"]
+    if is_data:
+        process_tier = process.split("_", 1)[0]
+        if '2016_H' in process and ('Muon' in process or 'Lepton' in process):
+            process_tier = process
+    else:
+        process_tier = lepton_selection
+    if lepton_selection == 'single_muon':
+        process_tier = 'single_muon'
+    filter_conditions = [f"{TRIGGER_SEL[year][process_tier]}"]
 
-    if lepton_selection == 'mumu' and '2016_H' in process:
-        filter_conditions[0] = '(trigger_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ || trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ)'
-    if lepton_selection == 'emu' and '2016_H' in process:
-        filter_conditions[0] = '(trigger_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ || trigger_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ)'
-
+    # if lepton_selection == 'mumu' and '2016_H' in process:
+    #     filter_conditions[0] = '(trigger_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ || trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ)'
+    # if lepton_selection == 'emu' and '2016_H' in process:
+    #     filter_conditions[0] = '(trigger_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ || trigger_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ)'
 
     # --- lepton selection
     if lepton_selection == 'ee':
         filter_conditions += [
-            f"n{LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons == {n_leptons}",
-            f"({LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_charge_leading * {LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_charge_subleading) < 1",
-            f"{LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_pt_leading > 25 && {LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_pt_subleading > 15",
-            f"dilepton_invariant_{lepton_selection}_mass > 20"
+            f"n{LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons == {n_leptons}"
+            f" && {LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_pt_leading > 25 && {LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_pt_subleading > 15"
+            f" && dilepton_invariant_{lepton_selection}_mass > 20",
+            f"({LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_charge_leading * {LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_charge_subleading) < 1"
         ]
         if on_Z_peak == 'on':
             filter_conditions.append(
-                f"dilepton_invariant_{lepton_selection}_mass >= {Z_PEAK_LOW_EDGE} && dilepton_invariant_{lepton_selection}_mass <= {Z_PEAK_HIGH_EDGE}"
+                f"(dilepton_invariant_{lepton_selection}_mass >= {Z_PEAK_LOW_EDGE} && dilepton_invariant_{lepton_selection}_mass <= {Z_PEAK_HIGH_EDGE})"
             )
         elif on_Z_peak == 'off':
             filter_conditions.append(
-                f"dilepton_invariant_{lepton_selection}_mass < {Z_PEAK_LOW_EDGE} || dilepton_invariant_{lepton_selection}_mass > {Z_PEAK_HIGH_EDGE}"
+                f"(dilepton_invariant_{lepton_selection}_mass < {Z_PEAK_LOW_EDGE} || dilepton_invariant_{lepton_selection}_mass > {Z_PEAK_HIGH_EDGE})"
             )
     
     elif lepton_selection == 'mumu':
         filter_conditions += [
-            f"ntightRelIso_{LEPTON_ID_MUON}ID_Muons == {n_leptons}",
-            f"(tightRelIso_{LEPTON_ID_MUON}ID_Muons_charge_leading * tightRelIso_{LEPTON_ID_MUON}ID_Muons_charge_subleading) < 1",
-            f"tightRelIso_{LEPTON_ID_MUON}ID_Muons_pt_leading > 25 && tightRelIso_{LEPTON_ID_MUON}ID_Muons_pt_subleading > 15",
-            f"dilepton_invariant_{lepton_selection}_mass > 20"
+            f"ntightRelIso_{LEPTON_ID_MUON}ID_Muons == {n_leptons}"
+            f" && tightRelIso_{LEPTON_ID_MUON}ID_Muons_pt_leading > 25 && tightRelIso_{LEPTON_ID_MUON}ID_Muons_pt_subleading > 15"
+            f" && dilepton_invariant_{lepton_selection}_mass > 20",
+            f" (tightRelIso_{LEPTON_ID_MUON}ID_Muons_charge_leading * tightRelIso_{LEPTON_ID_MUON}ID_Muons_charge_subleading) < 1"
         ]
         if on_Z_peak == 'on':
             filter_conditions.append(
-                f"dilepton_invariant_{lepton_selection}_mass >= {Z_PEAK_LOW_EDGE} && dilepton_invariant_{lepton_selection}_mass <= {Z_PEAK_HIGH_EDGE}"
+                f"(dilepton_invariant_{lepton_selection}_mass >= {Z_PEAK_LOW_EDGE} && dilepton_invariant_{lepton_selection}_mass <= {Z_PEAK_HIGH_EDGE})"
             )
         elif on_Z_peak == 'off':
             filter_conditions.append(
-                f"dilepton_invariant_{lepton_selection}_mass < {Z_PEAK_LOW_EDGE} || dilepton_invariant_{lepton_selection}_mass > {Z_PEAK_HIGH_EDGE}"
+                f"(dilepton_invariant_{lepton_selection}_mass < {Z_PEAK_LOW_EDGE} || dilepton_invariant_{lepton_selection}_mass > {Z_PEAK_HIGH_EDGE})"
             )
-    
+
     elif lepton_selection == 'emu':
         filter_conditions += [
-            f"n{LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons == 1",
-            f"ntightRelIso_{LEPTON_ID_MUON}ID_Muons == 1",
-            f"({LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_charge_leading * tightRelIso_{LEPTON_ID_MUON}ID_Muons_charge_leading) < 1",
-            f"(({LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_pt_leading > 25 && tightRelIso_{LEPTON_ID_MUON}ID_Muons_pt_leading > 15) "
-            f"|| ({LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_pt_leading > 15 && tightRelIso_{LEPTON_ID_MUON}ID_Muons_pt_leading > 25))"
+            f"n{LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons == 1 && ntightRelIso_{LEPTON_ID_MUON}ID_Muons == 1"
+            f" && (({LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_pt_leading > 25 && tightRelIso_{LEPTON_ID_MUON}ID_Muons_pt_leading > 15) "
+            f"|| ({LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_pt_leading >  15 && tightRelIso_{LEPTON_ID_MUON}ID_Muons_pt_leading > 25))",
+            f" ({LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_charge_leading * tightRelIso_{LEPTON_ID_MUON}ID_Muons_charge_leading) < 1"
         ]
 
     elif lepton_selection == 'single_muon':
         filter_conditions += [
             f"ntightRelIso_{LEPTON_ID_MUON}ID_Muons == 1",
-            f"tightRelIso_{LEPTON_ID_MUON}ID_Muons_pt_leading > 25",
+            f"tightRelIso_{LEPTON_ID_MUON}ID_Muons_pt_leading > 50",
             f"n{LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons == 0"
         ]
         # --- leptonic W
         filter_conditions.append(
-            f"MET_energy + tightRelIso_{LEPTON_ID_MUON}ID_Muons_pt_leading > 250"
+            f"(MET_energy + tightRelIso_{LEPTON_ID_MUON}ID_Muons_pt_leading > 250)"
+        )
+        # --- hadronic/leptonic top
+        filter_conditions.append(
+            f"(is_BJets_{ak4_systematic}_{b_wp}_outside_{boosted_jets}_and_tightRelIso_{LEPTON_ID_MUON}ID_Muons_in_same_hemisphere) && "
+            f"(is_selectedHOTVRJets_{boosted_systematic}_and_tightRelIso_{LEPTON_ID_MUON}ID_Muons_in_same_hemisphere == 0) "
         )
 
-    # --- hem veto
-    if year == '2018':
-        filter_conditions.append(f'HEM_veto')
-    # ---
-
-    # --- jet selection
+    # --- jet selection + MET filter (and HEM veto)
     if n_ak4_outside is not None:
+        additional_str = '_valid'
+        if n_b_outside is None:
+            additional_str = f'_outside_{boosted_jets}'
+
         if n_ak4_outside >= 2:
             filter_conditions.append(
-                f"nselectedJets_{ak4_systematic} >= {n_ak4_outside}"  #_outside_{boosted_jets}
+                f"nselectedJets_{ak4_systematic}{additional_str}>={n_ak4_outside}"  #
             )
         else:
             filter_conditions.append(
-                f"nselectedJets_{ak4_systematic} >= {n_ak4_outside}" #
+                f"nselectedJets_{ak4_systematic}{additional_str}=={n_ak4_outside}" #
             )
 
     if n_b_outside is not None:
         if n_b_outside >= 2:
             filter_conditions.append(
-                f"nBJets_{ak4_systematic}_{b_wp}_outside_{boosted_jets} >= {n_b_outside}"
+                f"nBJets_{ak4_systematic}_{b_wp}_outside_{boosted_jets}>={n_b_outside}"
             )
         else:
-            filter_conditions.append(
-                f"nBJets_{ak4_systematic}_{b_wp}_outside_{boosted_jets} >= {n_b_outside}"
-            )
+            if lepton_selection =='single_muon':
+                filter_conditions.append(
+                    f"nBJets_{ak4_systematic}_{b_wp}_outside_{boosted_jets}>={n_b_outside}"
+                )
+            else:
+                filter_conditions.append(
+                    f"nBJets_{ak4_systematic}_{b_wp}_outside_{boosted_jets}=={n_b_outside}"
+                )
+
+    # --- noisy filter
+    # filter_conditions.append(f'MET_filter')
+    filter_conditions[-1] += ' && MET_filter '
+    # ---
+
+    # --- hem veto
+    if year == '2018':
+        # filter_conditions.append(f'HEM_veto')
+        filter_conditions[-1] += '&& HEM_veto '
+    # if year == '2018':
+    #     filter_conditions.append(f'HEM_veto_only_hotvr_no_ak4')
+    #     filter_conditions[-1] += '&& HEM_veto_only_hotvr_no_ak4 '
+    # ---
+
+    print(f'Conditions: {filter_conditions}')
 
     cumulative_string_filter = " && ".join(filter_conditions)
-    # print(cumulative_string_filter)
-    root_df_filtered = root_df.Filter(
-        cumulative_string_filter, f'event_selection_{lepton_selection}'
-    )
+    print(f"\nSelection filter: {cumulative_string_filter}")
+
+    root_df_filtered = root_df.Filter(cumulative_string_filter, f'event_selection_{lepton_selection}')
+
+    if return_cutflow:
+        # Determine weight use
+        use_weights = not ('Double' in process or 'Muon' in process or 'Single' in process)
+        
+        cutflow_unweighted = []
+        cutflow_weighted = []
+
+        cumulative_condition = ""
+        for i, condition in enumerate(filter_conditions):
+            cumulative_condition = condition if cumulative_condition == "" else f"{cumulative_condition} && {condition}"
+            label = f"Cut_{i+1}"
+            current_df = root_df.Filter(cumulative_condition, label)
+
+            n_unweighted = current_df.Count().GetValue()
+            cutflow_unweighted.append((label, n_unweighted))
+
+            if use_weights:
+                if not current_df.HasColumn(f"{weight_column}"):
+                    raise RuntimeError(f"Weight column {weight_column} not found in DataFrame. Did you define it?")
+                n_weighted = current_df.Sum(f"{weight_column}").GetValue()
+                cutflow_weighted.append((label, n_weighted))
+
+        return root_df.Filter(cumulative_condition, f'event_selection_{lepton_selection}'), cutflow_unweighted, cutflow_weighted
 
     return root_df_filtered
 
@@ -524,7 +688,8 @@ def adding_new_columns(
         ntagged_jets=2,
         is_bkg_estimation=False,
         is_jet_composition=False,
-        is_cut_flow=False
+        is_cut_flow=False,
+        on_Z_peak='on',
 ):
 
     #### new columns definitions
@@ -542,6 +707,19 @@ def adding_new_columns(
             f'run, {"true" if is_data else "false"}'
             ")"
         )
+
+        # root_df = root_df.Define(
+        #     "HEM_veto_only_hotvr_no_ak4",
+        #     f"HEM_veto_only_hotvr_no_ak4("
+        #     f'selectedHOTVRJets_noJEC_pt, '
+        #     f'selectedHOTVRJets_noJEC_eta, '
+        #     f'selectedHOTVRJets_noJEC_phi, '
+        #     f'selectedJets_noJEC_pt, '
+        #     f'selectedJets_noJEC_eta, '
+        #     f'selectedJets_noJEC_phi, '
+        #     f'run, {"true" if is_data else "false"}'
+        #     ")"
+        # )
     # ---
 
 
@@ -575,15 +753,18 @@ def adding_new_columns(
 
     # ---lepton objects
     lepton_variables = [
-        'phi', 'eta', 'charge', 'pt', 'dxy', 'dz'
+        'phi', 'eta', 'charge', 'pt', #'dxy', 'dz', 'pfRelIso04'
     ]
-    for var in lepton_variables:
+    # electron variables
+    for var in lepton_variables + ['dxy', 'dz']:
         for ijet, jet in enumerate(['leading', 'subleading']): 
             root_df = root_df.Define(
                 f"{LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_{var}_{jet}",
                 f"{LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_{var}.size() > {ijet} ? {LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_{var}[{ijet}] : -99"
             ) # always checking the size of the array; if empty, segmentation violation error arises
-            if var == 'dz' or var == 'dxy': continue
+    # muon variables
+    for var in lepton_variables + ['pfRelIso04_all']:
+        for ijet, jet in enumerate(['leading', 'subleading']):
             root_df = root_df.Define(
                 f"tightRelIso_{LEPTON_ID_MUON}ID_Muons_{var}_{jet}",
                 f"tightRelIso_{LEPTON_ID_MUON}ID_Muons_{var}.size() > {ijet} ? tightRelIso_{LEPTON_ID_MUON}ID_Muons_{var}[{ijet}] : -99"
@@ -678,7 +859,7 @@ def adding_new_columns(
 
     # --- cleaned ak4 + jetID + pUId (jet < 50)
     root_df = root_df.Define(
-        f"selectedJets_{ak4_systematic}_inside_hotvr_fun",
+        f"selectedJets_{ak4_systematic}_in_hotvr",
         f'is_inside_hotvr('
         f'selectedJets_{ak4_systematic}_eta, '
         f'selectedJets_{ak4_systematic}_phi, '
@@ -688,6 +869,27 @@ def adding_new_columns(
         f'{nboosted_jets}'
         f')'
     )
+    if year == '2022' or year == '2022EE': # no need for PUjetID for Run 3 (PUPPI jets)
+        root_df = root_df.Define(
+            f"selectedJets_{ak4_systematic}_valid",
+            f"(ROOT::VecOps::RVec<int>(selectedJets_{ak4_systematic}_jetId) & 0b10) != 0"
+        )
+    else:
+        root_df = root_df.Define(
+            f"selectedJets_{ak4_systematic}_valid",
+            f"""
+                ((ROOT::VecOps::RVec<int>(selectedJets_{ak4_systematic}_jetId) & 0b10) != 0) &&
+                (
+                    (selectedJets_{ak4_systematic}_pt < 50 && selectedJets_{ak4_systematic}_puId != 0) ||
+                    (selectedJets_{ak4_systematic}_pt >= 50)
+                )
+            """
+        )
+
+    root_df = root_df.Define(
+        f"nselectedJets_{ak4_systematic}_valid",
+        f"Sum(selectedJets_{ak4_systematic}_valid)"
+    )
     # for boosted_jets, boosted_jets_label in zip(['ak8', 'hotvr'], [f'selectedFatJets_{boosted_systematic}', f'selectedHOTVRJets_{boosted_systematic}']):
     for boosted_jets, boosted_jets_label in zip(['hotvr'], [f'selectedHOTVRJets_{boosted_systematic}']):
         for jet_type, jet_type_label in zip(['==1', '==0'], ['inside', 'outside']):
@@ -695,13 +897,9 @@ def adding_new_columns(
             root_df = root_df.Define(
                 f"selectedJets_{ak4_systematic}_{jet_type_label}_{boosted_jets}",
                 f"""
-                    (ROOT::VecOps::RVec<int>(
-                        selectedJets_{ak4_systematic}_inside_{boosted_jets}_fun{jet_type})) &&
-                    ((ROOT::VecOps::RVec<int>(selectedJets_{ak4_systematic}_jetId) & 0b10) != 0) &&
-                    (
-                        (selectedJets_{ak4_systematic}_pt < 50 && selectedJets_{ak4_systematic}_puId != 0) ||
-                        (selectedJets_{ak4_systematic}_pt >= 50)
-                    )
+                    (ROOT::VecOps::RVec<int>(selectedJets_{ak4_systematic}_in_{boosted_jets}{jet_type})) 
+                    &&
+                    (selectedJets_{ak4_systematic}_valid)
                 """
             )
 
@@ -735,17 +933,11 @@ def adding_new_columns(
                 root_df = root_df.Define(
                     f"BJets_{ak4_systematic}_{WP}_{jet_type_label}_{boosted_jets}",
                     f"""
-                        (ROOT::VecOps::RVec<int>(
-                            selectedJets_{ak4_systematic}_is_inside_{boosted_jets}{jet_type}) &&
-                        (selectedJets_{ak4_systematic}_btagDeepFlavB > {B_TAGGING_WP[str(year)][WP]})
-                            &&
-                        (ROOT::VecOps::RVec<int>(selectedJets_{ak4_systematic}_jetId) & 0b10) != 0 &&
-                        (
-                            (selectedJets_{ak4_systematic}_pt < 50 && selectedJets_{ak4_systematic}_puId != 0) ||
-                            (selectedJets_{ak4_systematic}_pt >= 50)
-                        ) &&
-                        (selectedJets_{ak4_systematic}_btagDeepFlavB > {B_TAGGING_WP[str(year)][WP]})
-                    )
+                        (ROOT::VecOps::RVec<int>(selectedJets_{ak4_systematic}_in_{boosted_jets}{jet_type}))
+                        &&
+                        (selectedJets_{ak4_systematic}_btagDeepFlavB>{B_TAGGING_WP[str(year)][WP]})
+                        &&
+                        (selectedJets_{ak4_systematic}_valid)
                     """
                 ) 
                 root_df = root_df.Define(
@@ -898,7 +1090,72 @@ def adding_new_columns(
                     f"selectedHOTVRJets_{boosted_systematic}_is_top_tagged_wp_{wp_str}[{ijet}] ? "
                     f"selectedHOTVRJets_{boosted_systematic}_{var}[{ijet}] : -99"
                 )
+    
+        # --- sf calculation
+        if not is_data:
+            for sys_type in ["nominal", "up", "down"]:
+                root_df = root_df.Define(
+                    f"bdt_sf_{sys_type}",
+                    f"bdt_sf(selectedHOTVRJets_nominal_pt, "
+                    f"selectedHOTVRJets_nominal_has_hadronicTop_topIsInside, "
+                    # f"selectedHOTVRJets_nominal_has_genTopHadronic_inside, "
+                    f'"{year}", '
+                    f'"{sys_type}")'
+                )
+        # ---
     # --- 
+
+    # --- PU ID SFs (Run2) (loose WP)
+    if year != '2022' and year != '2022EE':
+        histo_eff_name = f'h2_eff_mcUL{year}_L' if year != '2016preVFP' else f'h2_eff_mcUL2016APV_L'
+        histo_sf_name = f'h2_eff_sfUL{year}_L' if year != '2016preVFP' else f'h2_eff_sfUL2016APV_L'
+        root_df = root_df.Define(
+            f"puID_L_sf_and_error",
+            f'get_PUID_scale_factor::rescaling_weights('
+            'selectedJets_nominal_puId,'
+            'selectedJets_nominal_pt,'
+            'selectedJets_nominal_eta,'
+            f'"{histo_eff_name}",'
+            f'"{histo_sf_name}")'
+        )
+
+        root_df = root_df.Define(f"puID_L_sf", "puID_L_sf_and_error.first")
+        root_df = root_df.Define(f"puID_L_sf_error", "puID_L_sf_and_error.second")
+        root_df = root_df.Define(f"puID_L_sf_up", "puID_L_sf + puID_L_sf_error")
+        root_df = root_df.Define(f"puID_L_sf_down", "puID_L_sf - puID_L_sf_error")
+
+    # ---
+
+    # --- double trigger SFs (Run 3)
+    if year == '2022' or year == '2022EE':
+        for lepton_selection in ['ee', 'mumu', 'emu']:
+            objects = ''
+            if lepton_selection == 'ee':
+                objects = f"{LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_pt"
+            elif lepton_selection == 'mumu':
+                objects = f"tightRelIso_{LEPTON_ID_MUON}ID_Muons_pt"
+            elif lepton_selection == 'emu':
+                muon_pt = f"tightRelIso_{LEPTON_ID_MUON}ID_Muons_pt"
+                ele_pt = f"{LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_pt"
+                # make an RVec<double> with [muon_pt[0], ele_pt[0]]
+                objects = f"ROOT::VecOps::RVec<float>{{static_cast<float>({ele_pt}[0]), static_cast<float>({muon_pt}[0])}}" # the tagging efficiency is calculated as: x-axis -> electron pt; y-axis -> muon pt
+
+            root_df = root_df.Define(
+                f"trigger_sf_and_error_{lepton_selection}",
+                f'get_trigger_scale_factor::rescaling_weights('
+                f'{objects},'
+                f'"{year}",'
+                f'"SF_is_{lepton_selection.replace("mu", "m")}_pt1_pt2")'
+            )
+
+            root_df = root_df.Define(f"trigger_sf_{lepton_selection}", f"trigger_sf_and_error_{lepton_selection}.first")
+            root_df = root_df.Define(f"trigger_sf_error_{lepton_selection}", f"trigger_sf_and_error_{lepton_selection}.second")
+            root_df = root_df.Define(f"trigger_sf_up_{lepton_selection}", f"trigger_sf_{lepton_selection} + trigger_sf_error_{lepton_selection}")
+            root_df = root_df.Define(f"trigger_sf_down_{lepton_selection}", f"trigger_sf_{lepton_selection} - trigger_sf_error_{lepton_selection}")
+
+            # test = root_df.AsNumpy([f"trigger_sf_error_{lepton_selection}"])
+            # print(test)
+    # ---
 
     # additional variables
     for jet in [
@@ -911,58 +1168,63 @@ def adding_new_columns(
                              "deltaR_jets({}_eta, {}_phi)".format(jet, jet))
 
     if is_data == False and is_jet_composition:
-        for composition_flag, jet_composition in JET_COMPOSITION_FLAGS.items():
-            root_df = root_df.Define("selectedHOTVRJets_nominal_flags_{}".format(composition_flag), jet_composition)
+        #adhoc flag definition for JES/JER variation, not present in NANO
+        if 'JER' in boosted_systematic or 'JES' in boosted_systematic:
+            for flag in JET_COMPOSITION_FLAGS:
+                root_df = root_df.Define(
+                    f"selectedHOTVRJets_{boosted_systematic}_{flag}", 
+                    f"jes_jer_flags_from_nominal_hotvr("
+                    f"selectedHOTVRJets_nominal_eta, selectedHOTVRJets_nominal_phi,"
+                    f"selectedHOTVRJets_nominal_pt, selectedHOTVRJets_nominal_{flag},"
+                    f"selectedHOTVRJets_{boosted_systematic}_eta, selectedHOTVRJets_{boosted_systematic}_phi,"
+                    f"selectedHOTVRJets_{boosted_systematic}_pt)"
+                )
+        # sys.exit()
+        
+        # merging flags togeter into classes
+        for composition_flag, jet_composition in JET_COMPOSITION_FLAGS_MERGED.items():
+            root_df = root_df.Define(f"selectedHOTVRJets_{boosted_systematic}_flags_{composition_flag}", jet_composition)
             root_df = root_df.Define(
-                f"selectedHOTVRJets_nominal_{composition_flag}",
+                f"selectedHOTVRJets_{boosted_systematic}_{composition_flag}",
                 """
                 ROOT::VecOps::RVec<int> int_flags;
-                auto flags = selectedHOTVRJets_nominal_flags_{composition_flag};
+                auto flags = selectedHOTVRJets_{boosted_systematic}_flags_{composition_flag};
                 for (size_t i = 0; i < flags.size(); ++i) {{
                     int_flags.push_back(flags[i] ? 1 : 0);
                 }}
                 return int_flags;
-                """.format(composition_flag=composition_flag)
+                """.format(composition_flag=composition_flag, boosted_systematic=boosted_systematic)
             )
             root_df = root_df.Define(
-                "nselectedHOTVRJets_nominal_{}".format(composition_flag),
-                f"ROOT::VecOps::Sum(selectedHOTVRJets_nominal_{composition_flag})"
+                f"nselectedHOTVRJets_{boosted_systematic}_{composition_flag}",
+                f"ROOT::VecOps::Sum(selectedHOTVRJets_{boosted_systematic}_{composition_flag})"
             )
             # ---
-
+        # sys.exit()
             # ---
         for ijet, jet in enumerate(['leading', 'subleading']):
-            for composition_flag, jet_composition in JET_COMPOSITION_FLAGS.items():
+            for composition_flag, jet_composition in JET_COMPOSITION_FLAGS_MERGED.items():
                 if '||' in jet_composition:
-                    jet_composition = jet_composition.replace('||', '[{}]||'.format(ijet))
-                    jet_composition += '[{}]'.format(ijet)
+                    jet_composition = jet_composition.replace('||', f'[{ijet}]||')
+                    jet_composition += f'[{ijet}]'
                 else:
-                    jet_composition += '[{}]'.format(ijet)
+                    jet_composition += f'[{ijet}]'
 
                 for var in hotvr_variables:
-                    if var == 'invariant_mass_leading_subleading': continue
-                    # print("selectedHOTVRJets_nominal_{}_{}_{}".format(composition_flag, var, jet), 
-                    #                          "variable_per_jet_per_jet_composition(selectedHOTVRJets_nominal_{}, {}, {})".format(var, jet_composition, ijet))
+                    if var == 'invariant_mass_leading_subleading': 
+                        continue
                     # --- uncovered jet type
                     if composition_flag == 'non_covered':
-                        root_df = root_df.Define("selectedHOTVRJets_nominal_{}_{}_{}".format(composition_flag, var, jet), 
-                                            "variable_per_jet_per_jet_composition_non_covered(selectedHOTVRJets_nominal_{}, {}, {})".format(var, jet_composition, ijet))
+                        root_df = root_df.Define(
+                            f"selectedHOTVRJets_{boosted_systematic}_{composition_flag}_{var}_{jet}", 
+                            f"variable_per_jet_per_jet_composition_non_covered(selectedHOTVRJets_{boosted_systematic}_{var}, {jet_composition}, {ijet})"
+                        )
                     # ---
                     else:
-                        # print("selectedHOTVRJets_nominal_{}_{}_{}".format(composition_flag, var, jet), 
-                        #                     "variable_per_jet_per_jet_composition(selectedHOTVRJets_nominal_{}, {}, {})".format(var, jet_composition, ijet))
-                        root_df = root_df.Define("selectedHOTVRJets_nominal_{}_{}_{}".format(composition_flag, var, jet), 
-                                            "variable_per_jet_per_jet_composition(selectedHOTVRJets_nominal_{}, {}, {})".format(var, jet_composition, ijet))
-
-        #     for wp in BDT_SCORE_WPs:
-        #         root_df = root_df.Define("selectedHOTVRJets_nominal_{}_is_top_tagged_wp_{}".format(composition_flag, str(wp).replace('.', 'p')),
-        #                             "selectedHOTVRJets_nominal_{}_scoreBDT > {}".format(composition_flag, wp))
-        #         root_df = root_df.Define("selectedHOTVRJets_nominal_{}_is_top_tagged_wp_{}_mass".format(composition_flag, str(wp).replace('.', 'p')),
-        #                             "selectedHOTVRJets_nominal_{}_mass[selectedHOTVRJets_nominal_{}_is_top_tagged_wp_{}]".format(composition_flag, composition_flag, str(wp).replace('.', 'p')))
-
-        # print(jet_compositions_str)
-        # root_df = root_df.Define("jet_gen_compositions", 
-        #                          "jet_gen_compositions(nselectedHOTVRJets_nominal, {}{})".format(jet_compositions_str, len(JET_COMPOSITION_FLAGS.keys())))
+                        root_df = root_df.Define(
+                            f"selectedHOTVRJets_{boosted_systematic}_{composition_flag}_{var}_{jet}", 
+                            f"variable_per_jet_per_jet_composition(selectedHOTVRJets_{boosted_systematic}_{var}, {jet_composition}, {ijet})"
+                        )
     # ---
 
     if is_bkg_estimation:
@@ -980,7 +1242,7 @@ def adding_new_columns(
 
         # variables for background estimation
         for var in ['pt', 'mass']:
-            if 'ttZJets' in process or 'ttWJets' in process:
+            if 'ttZJets' in process or 'ttWJets' in process or 'ttll' in process or 'ttlnu' in process:
                 root_df = root_df.Define(
                     f"hotvr_combined_{var}", 
                     "ROOT::VecOps::RVec<float>{"
@@ -1038,55 +1300,13 @@ def adding_new_columns(
     #         root_df = root_df.Define("genTop_hadronic_all_decays_is_inside_{}_pt".format(boosted_jet),
     #                                  "genTop_pt[genTop_is_inside_{} & genTop_has_hadronically_decay & genTop_all_decays_inside_{}]".format(boosted_jet, boosted_jet))
 
-    #     root_df = root_df.Define("ngenTop_hadronically_decay", 
+    # #     root_df = root_df.Define("ngenTop_hadronically_decay", 
     #                              "Sum(genTop_has_hadronically_decay)")
-    # ---
-
-    if is_cut_flow:
-        trigger_selection = {
-            'ee': TRIGGER_SEL[year]['ee'],
-            'mumu': TRIGGER_SEL[year]['mumu'],
-            'emu': TRIGGER_SEL[year]['emu']
-        }
-        if '2016_H' in process:
-            trigger_selection = {
-            'ee': TRIGGER_SEL[year]['ee'],
-            'mumu': 'trigger_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ || trigger_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ',
-            'emu': 'trigger_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ || trigger_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ'
-        }
-
-        root_df = root_df.Define(
-            'cut_flow_ee', 
-            'cut_flow_same_flavour_leptons('
-            f'{trigger_selection["ee"]}, '
-            f'n{LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons, {LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_charge, {LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_pt, '
-            f'dilepton_invariant_ee_mass, nselectedJets_{ak4_systematic}, selectedJets_{ak4_systematic}_is_inside_{boosted_jets}, selectedJets_{ak4_systematic}_jetId, selectedJets_{ak4_systematic}_btagDeepFlavB, '
-            f'nBJets_{ak4_systematic}_loose_outside_{boosted_jets}, nselectedHOTVRJets_{boosted_systematic}, selectedHOTVRJets_{boosted_systematic}_scoreBDT, "{year}")'
-        )
-
-        root_df = root_df.Define(
-            'cut_flow_mumu', 
-            'cut_flow_same_flavour_leptons('
-            f'{trigger_selection["mumu"]}, '
-            f'ntightRelIso_{LEPTON_ID_MUON}ID_Muons, tightRelIso_{LEPTON_ID_MUON}ID_Muons_charge, tightRelIso_{LEPTON_ID_MUON}ID_Muons_pt, '
-            f'dilepton_invariant_mumu_mass, nselectedJets_{ak4_systematic}, selectedJets_{ak4_systematic}_is_inside_{boosted_jets}, selectedJets_{ak4_systematic}_jetId, selectedJets_{ak4_systematic}_btagDeepFlavB, '
-            f'nBJets_{ak4_systematic}_loose_outside_{boosted_jets}, nselectedHOTVRJets_{boosted_systematic}, selectedHOTVRJets_{boosted_systematic}_scoreBDT, "{year}")'
-        )
-
-        root_df = root_df.Define(
-            'cut_flow_emu', 
-            'cut_flow_opposite_flavour_leptons('
-            f'{trigger_selection["emu"]}, '
-            f'n{LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons, ntightRelIso_{LEPTON_ID_MUON}ID_Muons, '
-            f'{LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_charge, {LEPTON_ID_ELE}_{ELECTRON_ID_TYPE}_Electrons_pt, '
-            f'tightRelIso_{LEPTON_ID_MUON}ID_Muons_charge, tightRelIso_{LEPTON_ID_MUON}ID_Muons_pt, '
-            f'dilepton_invariant_emu_mass, nselectedJets_{ak4_systematic}, selectedJets_{ak4_systematic}_is_inside_{boosted_jets}, selectedJets_{ak4_systematic}_jetId, selectedJets_{ak4_systematic}_btagDeepFlavB, '
-            f'nBJets_{ak4_systematic}_loose_outside_{boosted_jets}, nselectedHOTVRJets_{boosted_systematic}, selectedHOTVRJets_{boosted_systematic}_scoreBDT, "{year}")'
-        )
+    # # ---
 
     ####
+    
     return root_df
-
 
 def me_uncertainties_handler(root_df, tot_weights, nlhe):
     nlhescale_weights = root_df.Mean("nLHEScaleWeight").GetValue()
@@ -1101,7 +1321,7 @@ def me_uncertainties_handler(root_df, tot_weights, nlhe):
         if nlhe == 5: nlhe = 4
         if nlhe == 6: nlhe = 5
         if nlhe == 7: nlhe = 6
-        if nlhe == 8: nlhe = 6
+        if nlhe == 8: nlhe = 7
     else:
         print("Unexpected length of the norm for LHEScaleWeight")
     return tot_weights, nlhe

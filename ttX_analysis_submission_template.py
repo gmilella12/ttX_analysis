@@ -40,13 +40,47 @@ for subdir, dirs, files in os.walk(ROOT_DIR):
         # if 'semilep' in file: continue
         # if '_300' not in file and '_500_' not in file and '_700' not in file: continue
         if 'nlo' in file: continue
-        if 'dy_to' in file and args.year == '2018': continue
-        if 'dy_to' in file and args.year == '2017': continue
-        # if 'dy_to2L_m-50' not in file: continue
-        # if 'ttW' not in file and 'ttZ' not in file and 'ttH' not in file: continue
-        # if 'tt_semil' not in file: continue
-        if 'Single' not in file: continue
+        if 'dy_to' in file and args.year == '2018': 
+            continue
+        if 'dy_to' in file and args.year == '2017': 
+            continue
+        if 'dy_m-50' in file and args.year == '2022EE': 
+            continue
+        if 'ttll_m-4-50' in file:
+            continue
+        # if 'semil' not in file: continue
+        # if 'ttll' not in file and 'ttlnu' not in file: continue
 
+        # if 'M-1500_Width20' not in file: continue
+        # if 'dy_' not in file: continue
+        
+        # if 'Muon' not in file and args.is_data: 
+        #     continue
+        if 'SingleM' not in file and args.is_data: 
+            continue
+        # if 'wjets_pt_250' not in file: 
+        #     continue
+
+        # if 'TZ' not in file and args.is_sgn: 
+        #     continue
+        # if file.startswith('TZp') in file:
+        #     continue
+
+        # if 'tt_semi' not in file:
+            continue
+
+        # if 'WW' not in file and 'WZ' not in file and 'ZZ' not in file:
+        #     continue
+
+        # if 'tt_dilepton' not in file and 'tt_semilepton' not in file and 'Jets' not in file and 'ttl' not in file:  
+        #     continue
+        # if 'tt_dilepton' in file or 'tt_semilepton' in file or 'Jets' in file or 'ttl' in file:
+        #     continue
+
+        # if 'ttH' not in file and 'tttt' not in file and 'Jets' not in file and 'ttl' not in file:  
+        #     continue
+        # if 'ttl' not in file: 
+        #     continue
 
         file_list.append(os.path.join(subdir, file))
 

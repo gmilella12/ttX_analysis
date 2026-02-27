@@ -4,7 +4,7 @@ TTZprimeToTT_M-4000:
   xSec: 0.00000016
   isUsed: true
 
-TZprimeToTT_M-4000:
+TZPrimetoTT_M4000:
   xSec: 0.0000003
   isUsed: true
 
@@ -12,7 +12,7 @@ TTZprimeToTT_M-3000:
   xSec: 0.00000335
   isUsed: true
 
-TZprimeToTT_M-3000:
+TZPrimetoTT_M3000:
   xSec: 0.00000538
   isUsed: true
 
@@ -24,7 +24,7 @@ TTZprimeToTT_M-2500:
   xSec: 0.0000161
   isUsed: true
 
-TZprimeToTT_M-2500:
+TZPrimetoTT_M2500:
   xSec: 0.0000238
   isUsed: true
 
@@ -44,7 +44,7 @@ TTZprimeToTT_M-2000:
   xSec: 0.0000850
   isUsed: true
 
-TZprimeToTT_M-2000:
+TZPrimetoTT_M2000:
   xSec: 0.000114
   isUsed: true
 
@@ -56,7 +56,7 @@ TTZprimeToTT_M-1750:
   xSec: 0.000207
   isUsed: true
 
-TZprimeToTT_M-1750:
+TZPrimetoTT_M1750:
   xSec: 0.000262
   isUsed: true
 
@@ -68,7 +68,7 @@ TTZprimeToTT_M-1500:
   xSec: 0.000540
   isUsed: true 
 
-TZprimeToTT_M-1500:
+TZPrimetoTT_M1500:
   xSec: 0.00062
   isUsed: true 
 
@@ -80,7 +80,7 @@ TTZprimeToTT_M-1250:
   xSec: 0.00152
   isUsed: true
 
-TZprimeToTT_M-1250:
+TZPrimetoTT_M1250:
   xSec: 0.00161
   isUsed: true
 
@@ -92,7 +92,7 @@ TTZprimeToTT_M-1000:
   xSec: 0.00469
   isUsed: true
 
-TZprimeToTT_M-1000:
+TZPrimetoTT_M1000:
   xSec: 0.00489
   isUsed: true
 
@@ -108,7 +108,7 @@ TTZprimeToTT_M-750:
   xSec: 0.0164
   isUsed: true  
 
-TZprimeToTT_M-750:
+TZPrimetoTT_M750:
   xSec: 0.0143
   isUsed: true
 
@@ -120,7 +120,7 @@ TTZprimeToTT_M-500:
   xSec: 0.0756
   isUsed: true  
 
-TZprimeToTT_M-500:
+TZPrimetoTT_M500:
   xSec: 0.0578
   isUsed: true 
   
@@ -344,6 +344,10 @@ dy_m-10_50:
   xSec: 18610
   isUsed: true
 
+dy_m-10_50_lo:
+  xSec: 15910
+  isUsed: true
+
 dy_ht_100:
   xSec: 140.1
   isUsed: true
@@ -430,4 +434,100 @@ qcd_ht_2000:
 
 qcd_ht_inf:
   xSec: 20.2
+  isUsed: true
+
+tta_m500: 
+  xSec: 0.01159
+  isUsed: true
+
+tta_m750: 
+  xSec: 0.003123
+  isUsed: true
+
+tta_m1000: 
+  xSec: 0.0009992
+  isUsed: true
+
+tta_m1250: 
+  xSec: 0.0003567
+  isUsed: true
+
+tta_m1500: 
+  xSec: 0.0001372
+  isUsed: true
+
+tta_m1750: 
+  xSec: 5.682e-05
+  isUsed: true
+
+tta_m2000: 
+  xSec: 2.429e-05
+  isUsed: true
+
+tta_m2500: 
+  xSec: 4.943e-06
+  isUsed: true
+
+tta_m3000: 
+  xSec: 1.086e-06
+  isUsed: true
+
+tta_m4000: 
+  xSec: 6.019e-08
+  isUsed: true
+
+tth_m500: 
+  xSec: 0.008089
+  isUsed: true
+
+tth_m750: 
+  xSec: 0.002498
+  isUsed: true
+
+tth_m1000: 
+  xSec: 0.0008663
+  isUsed: true
+
+tth_m1250: 
+  xSec: 0.0003237
+  isUsed: true
+
+tth_m1500: 
+  xSec: 0.000128
+  isUsed: true
+
+tth_m1750: 
+  xSec: 5.391e-05
+  isUsed: true
+
+tth_m2000: 
+  xSec: 2.332e-05
+  isUsed: true
+
+tth_m2500: 
+  xSec: 4.818e-06
+  isUsed: true
+
+tth_m3000: 
+  xSec: 1.068e-06
+  isUsed: true
+
+tth_m4000: 
+  xSec: 5.967e-08
+  isUsed: true
+
+wjets_pt_100To250:
+  xSec: 763.7
+  isUsed: true
+
+wjets_pt_250To400:
+  xSec: 27.55
+  isUsed: true
+
+wjets_pt_400To600:
+  xSec: 3.477
+  isUsed: true
+
+wjets_pt_600ToInf:
+  xSec: 0.5415
   isUsed: true

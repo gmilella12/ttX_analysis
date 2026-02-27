@@ -209,32 +209,99 @@ float invariant_mass_1tag_category(
 }
 
 
-float getScaleFactor(float pt) {
-    TFile eff_file("tagging_hotvr_efficiency_vs_pt.root");
-    if (!eff_file.IsOpen()) {
-        std::cerr << "Failed to open file!" << std::endl;
-        return 1.0;
+struct SFData {
+    std::vector<float> edges;
+    std::map<std::string, std::vector<float>> variations;
+};
+
+float getSFforPt(float pt, const SFData& sf_data, const std::string& variation) {
+    const auto& edges = sf_data.edges;
+
+    const std::string var = (sf_data.variations.count(variation) ? variation : "nominal");
+    const auto& content = sf_data.variations.at(var);
+
+    if (pt < edges.front()) {
+        return content.front();
     }
 
-    TH1D* histo = dynamic_cast<TH1D*>(eff_file.Get("hotvr_tagging_efficiency"));
-    if (!histo) {
-        std::cerr << "Histogram not found!" << std::endl;
-        eff_file.Close();
-        return 1.0;
+    for (size_t i = 0; i < edges.size() - 1; ++i) {
+        if (pt >= edges[i] && pt < edges[i + 1]) {
+            return content[i];
+        }
     }
 
-    int bin = histo->FindBin(pt);
-    float scaleFactor = histo->GetBinContent(bin);
-
-    eff_file.Close();
-    return scaleFactor;
+    return content.back(); 
 }
+float bdt_sf(
+    const RVec<float> &jets_pt, 
+    const RVec<int> &jets_hadronic_top,
+    const std::string &year,
+    const std::string &variation
+) {
+    std::map<std::string, SFData> sf_map = {
+        {"2022", {
+            {200, 300, 400, 480, 600, 1200},
+            {
+                {"nominal", {0.908, 0.9938, 0.8764, 0.8781, 0.9823}},
+                {"up",      {0.9697, 1.0700, 0.9648, 0.9593, 1.1060}},
+                {"down",    {0.8524, 0.9176, 0.7854, 0.7950, 0.8620}}
+            }
+        }},
+        {"2022EE", {
+            {200, 300, 400, 480, 600, 1200},
+            {
+                {"nominal", {0.980, 0.9413, 1.0347, 1.0813, 1.0978}},
+                {"up",      {1.1345, 1.0167, 1.0964, 1.1425, 1.2003}},
+                {"down",    {0.8381, 0.8738, 0.9714, 1.0213, 1.0131}}
+            }
+        }},
+        {"2018", {
+            {200, 300, 400, 480, 600, 1200},
+            {
+                {"nominal", {1.011, 0.9091, 1.0468, 1.0264, 0.9275}},
+                {"up",      {1.1066, 0.9561, 1.1012, 1.1010, 1.0152}},
+                {"down",    {0.9202, 0.8613, 0.9886, 0.9504, 0.8423}}
+            }
+        }},
+        {"2017", {
+            {200, 300, 400, 480, 600, 1200},
+            {
+                {"nominal", {0.962, 0.9679, 0.9140, 0.9980, 0.8594}},
+                {"up",      {1.013, 1.0307, 0.9665, 1.0712, 0.9659}},
+                {"down",    {0.903, 0.9210, 0.8629, 0.9220, 0.7546}}
+            }
+        }},
+        {"2016", {
+            {200, 300, 400, 480, 600, 1200},
+            {
+                {"nominal", {1.087, 1.1653, 0.9798, 1.0892, 0.9879}},
+                {"up",      {1.1632, 1.2560, 1.0586, 1.1718, 1.1590}},
+                {"down",    {1.0175, 1.0740, 0.9072, 0.9957, 0.8425}}
+            }
+        }},
+        {"2016preVFP", {
+            {200, 300, 400, 480, 600, 1200},
+            {
+                {"nominal", {0.954, 0.9936, 0.9856, 1.0813, 1.3076}},
+                {"up",      {0.9967, 1.0698, 1.0593, 1.1892, 1.6375}},
+                {"down",    {0.9141, 0.9254, 0.9142, 0.9762, 1.0808}}
+            }
+        }}
+    };
 
-float rescaling_weights(const RVec<float> &object_pt) {
-    float scale_jet1 = getScaleFactor(object_pt[0]);
-    float scale_jet2 = getScaleFactor(object_pt[1]);
+    float scaleFactor = 1.0;
 
-    return scale_jet1 * scale_jet2;
+    if (sf_map.find(year) == sf_map.end()) return scaleFactor;
+
+    const auto& sf_data = sf_map[year];
+
+    for (int ijet = 0; ijet < jets_pt.size(); ++ijet) {
+        if (jets_hadronic_top[ijet] == 1) { //applied only to hadronic top jets
+            scaleFactor *= getSFforPt(jets_pt[ijet], sf_data, variation);
+        }
+    }
+
+    return scaleFactor;
 }
 
 float invariant_mass_1_gen_matched_1_gen_unmatched(
@@ -549,198 +616,6 @@ int cut_and_count_categorization_cut_based(
 
 }
 
-// --- CUT FLOW FOR SIGNAL REGION
-// int cut_flow_same_flavour_leptons(
-//     Int_t trigger, Int_t nLeptons, const RVec<float> &leptonCharge, const RVec<float> &leptonPt, 
-//     Float_t invariant_diLeptons_mass, Int_t nAK4Jets, const RVec<int> ak4IsInside, const RVec<int> ak4JetId, const RVec<float> ak4DeepFlavB,
-//     Int_t nBJets, Int_t nBoostedJets, const RVec<float> hotvrBDT, const std::string &year
-// ) {
-
-//     std::map<std::string,float> b_tagging_wp = {{"2018", 0.0490}, {"2017", 0.0532}, {"2016", 0.0480}, {"2016preVFP", 0.0614} }; // loose
-//     // std::map<std::string,float> b_tagging_wp = {{"2018", 0.2783}, {"2017", 0.3040}, {"2016", 0.2489}, {"2016preVFP", 0.3093} }; // medium
-//     // std::map<std::string,float> b_tagging_wp = {{"2018", 0.7100}, {"2017", 0.7476}, {"2016", 0.6377}, {"2016preVFP", 0.7221} }; // tight
-    
-//     int cut_stage = 0;
-
-//     // Trigger
-//     if (!trigger) return cut_stage;
-//     cut_stage = 1;
-
-//     // ==2 leptons
-//     if (nLeptons != 2) return cut_stage;
-//     cut_stage += 1;
-
-//     // OS + pT requirements + lowDileptonInvariantMass
-//     if (!(leptonCharge[0] * leptonCharge[1] < 0 && leptonPt[0] > 25 && leptonPt[1] > 15 && invariant_diLeptons_mass > 20))
-//         return cut_stage;
-//     cut_stage += 1;
-
-//     // Off Z peak
-//     bool isOnZPeak = invariant_diLeptons_mass >= 80 && invariant_diLeptons_mass <= 101;
-//     if (isOnZPeak) return cut_stage;
-//     cut_stage += 1;
-
-//     // at least 2 ak4
-//     // if (nAK4Jets < 2) return cut_stage;
-//     // if (nAK4Jets != 1) return cut_stage;
-//     // cut_stage += 1;
-
-
-//     // at least 2 ak4 with ak4IsInside == 0
-//     int ak4OutsideCount = 0;
-//     for (size_t i = 0; i < ak4IsInside.size(); ++i) {
-//         if (ak4IsInside[i] == 0 && ak4JetId[i] & 0b10) ak4OutsideCount++;
-//     }
-//     if (ak4OutsideCount < 2) return cut_stage;
-//     cut_stage += 1;
-//     // if (ak4OutsideCount != 1) return cut_stage;
-//     // cut_stage += 1;
-
-//     // at least 2 ak4 with ak4DeepFlavB > 0.02
-//     int ak4DeepFlavBCount = 0;
-//     for (size_t i = 0; i < ak4DeepFlavB.size(); ++i) {
-//         if (ak4DeepFlavB[i] > b_tagging_wp.at(year) && ak4IsInside[i] == 0 && ak4JetId[i] & 0b10) ak4DeepFlavBCount++;
-//     }
-//     // if (ak4DeepFlavBCount < 2) return cut_stage;
-//     // cut_stage += 1;
-//     if (ak4DeepFlavBCount != 1) return cut_stage; 
-//     cut_stage += 1;
-
-//     // at least hotvr
-//     if (nBoostedJets < 2) return cut_stage;
-//     cut_stage += 1;
-    
-//     // both tagged
-//     if (hotvrBDT[0]<0.5 || hotvrBDT[1]<0.5) return cut_stage;
-//     cut_stage += 1;
-//     // at least one tagged
-//     // if (hotvrBDT[0] < 0.5 && hotvrBDT[1] < 0.5) return cut_stage;
-//     // cut_stage += 1;
-
-//     return cut_stage;
-// }
-// ---
-
-// --- CUT FLOW FOR CONTROL REGION
-int cut_flow_same_flavour_leptons(
-    Int_t trigger, Int_t nLeptons, const RVec<float> &leptonCharge, const RVec<float> &leptonPt, 
-    Float_t invariant_diLeptons_mass, Int_t nAK4Jets, const RVec<int> ak4IsInside, const RVec<int> ak4JetId, const RVec<float> ak4DeepFlavB,
-    Int_t nBJets, Int_t nBoostedJets, const RVec<float> hotvrBDT, const std::string &year
-) {
-
-    std::map<std::string,float> b_tagging_wp = {{"2018", 0.0490}, {"2017", 0.0532}, {"2016", 0.0480}, {"2016preVFP", 0.0614} };
-    // 
-    int cut_stage = 0;
-
-    // Trigger
-    if (!trigger) return cut_stage;
-    cut_stage = 1;
-
-    // ==2 leptons
-    if (nLeptons != 2) return cut_stage;
-    cut_stage += 1;
-
-    // OS + pT requirements + lowDileptonInvariantMass
-    if (!(leptonCharge[0] * leptonCharge[1] < 0 && leptonPt[0] > 25 && leptonPt[1] > 15 && invariant_diLeptons_mass > 20))
-        return cut_stage;
-    cut_stage += 1;
-
-    // Off Z peak
-    bool isOffZPeak = invariant_diLeptons_mass < 80 || invariant_diLeptons_mass > 101;
-    if (isOffZPeak) return cut_stage;
-    cut_stage += 1;
-
-    // int ak4OutsideCount = 0;
-    // for (size_t i = 0; i < ak4IsInside.size(); ++i) {
-    //     if (ak4IsInside[i] == 0) ak4OutsideCount++;
-    // }
-    // if (ak4OutsideCount < 2) return cut_stage;
-    // cut_stage += 1;
-    // if (ak4OutsideCount != 1) return cut_stage;
-    // cut_stage += 1;
-
-    // at least hotvr
-    if (nBoostedJets < 2) return cut_stage;
-    cut_stage += 1;
-
-    // both tagged
-    // if (hotvrBDT[0]<0.5 || hotvrBDT[1]<0.5) return cut_stage;
-    // cut_stage += 1;
-    // at least one tagged
-    if (hotvrBDT[0] < 0.5 && hotvrBDT[1] < 0.5) return cut_stage;
-    cut_stage += 1;
-
-    return cut_stage;
-}
-// ---
-
-int cut_flow_opposite_flavour_leptons(
-    Int_t trigger, Int_t nElectrons, Int_t nMuons,
-    const RVec<float> &electronCharge, const RVec<float> &electronPt, 
-    const RVec<float> &muonCharge, const RVec<float> &muonPt, 
-    Float_t invariant_diLeptons_mass, Int_t nAK4Jets, const RVec<int> ak4IsInside, const RVec<int> ak4JetId, const RVec<float> ak4DeepFlavB,
-    Int_t nBJets, Int_t nBoostedJets, const RVec<float> hotvrBDT, const std::string &year
-) {
-
-    std::map<std::string,float> b_tagging_wp = {{"2018", 0.0490}, {"2017", 0.0532}, {"2016", 0.0480}, {"2016preVFP", 0.0614} }; // loose
-    // std::map<std::string,float> b_tagging_wp = {{"2018", 0.2783}, {"2017", 0.3040}, {"2016", 0.2489}, {"2016preVFP", 0.3093} }; // medium
-    // std::map<std::string,float> b_tagging_wp = {{"2018", 0.7100}, {"2017", 0.7476}, {"2016", 0.6377}, {"2016preVFP", 0.7221} }; // tight
-    // 
-    int cut_stage = 0;
-
-    // Trigger
-    if (!trigger) return cut_stage;
-    cut_stage = 1;
-
-    // ==1 electron and ==1 muon
-    if (!(nElectrons == 1 && nMuons == 1)) return cut_stage;
-    cut_stage += 1;
-
-    // OS + pT requirements + lowDileptonInvariantMass
-    bool ptRequirementsAndOS = (electronCharge[0] * muonCharge[0] < 0) && 
-                             ((electronPt[0] > 25 && muonPt[0] > 15) || 
-                              (muonPt[0] > 25 && electronPt[0] > 15));  
-    if (!ptRequirementsAndOS) return cut_stage;
-    cut_stage += 1;
-
-    // at least 2 ak4
-    // if (nAK4Jets < 2) return cut_stage;
-    // if (nAK4Jets != 1) return cut_stage;
-    // cut_stage += 1;
-
-    // at least 2 ak4 with ak4IsInside == 0
-    int ak4OutsideCount = 0;
-    for (size_t i = 0; i < ak4IsInside.size(); ++i) {
-        if (ak4IsInside[i] == 0 && ak4JetId[i] & 0b10) ak4OutsideCount++;
-    }
-    if (ak4OutsideCount < 2) return cut_stage;
-    cut_stage += 1;
-    // if (ak4OutsideCount != 1) return cut_stage;
-    // cut_stage += 1;
-
-    // at least 2 ak4 with ak4DeepFlavB > 0.02
-    int ak4DeepFlavBCount = 0;
-    for (size_t i = 0; i < ak4DeepFlavB.size(); ++i) {
-        if (ak4DeepFlavB[i] > b_tagging_wp.at(year) && ak4IsInside[i] == 0 && ak4JetId[i] & 0b10) ak4DeepFlavBCount++;
-    }
-    // if (ak4DeepFlavBCount < 2) return cut_stage;
-    // cut_stage += 1;
-    if (ak4DeepFlavBCount != 1) return cut_stage; 
-    cut_stage += 1;
-
-    // at least hotvr
-    if (nBoostedJets < 2) return cut_stage;
-    cut_stage += 1;
-
-    // both tagged
-    if (hotvrBDT[0]<0.5 || hotvrBDT[1]<0.5) return cut_stage;
-    cut_stage += 1;
-    // at least one tagged
-    // if (hotvrBDT[0] < 0.5 && hotvrBDT[1] < 0.5) return cut_stage;
-    // cut_stage += 1;
-
-    return cut_stage;
-}
 
 float variable_per_jet_per_jet_composition(const RVec<float> &variable, const bool &composition_flag, int ijet)
 {
@@ -939,12 +814,61 @@ bool HEM_veto(
         }
     }
 
-    for (size_t ij=0; ij < electron_pt.size(); ++ij) {
+    for (size_t ij=0; ij < jet_eta.size(); ++ij) {
         if (jet_pt[ij] > pt_threshold &&
             jet_eta[ij] > HEM_eta_min && jet_eta[ij] < HEM_eta_max &&
             jet_phi[ij] > HEM_phi_min_jet && jet_phi[ij] < HEM_phi_max_jet) {
             return false; // Event fails HEM veto
         }
+    }
+
+    return true;
+}
+
+bool HEM_veto_only_hotvr_no_ak4(
+    const RVec<float>& hotvr_pt,
+    const RVec<float>& hotvr_eta,
+    const RVec<float>& hotvr_phi, 
+    const RVec<float>& jet_pt,
+    const RVec<float>& jet_eta,
+    const RVec<float>& jet_phi,
+    const int run, 
+    const bool isData
+)
+{
+    const float HEM_eta_min = -3.2, HEM_eta_max = -1.3;
+    const float HEM_phi_min_hotvr = -1.57, HEM_phi_max_hotvr = -0.87;
+    const float HEM_phi_min_jet = -1.77, HEM_phi_max_jet = -0.67;
+    const float pt_threshold = 20.0;
+
+    if (isData && run < 319077) {
+        return true;
+    }
+
+    bool has_hotvr_in_HEM = false;
+    bool has_ak4_in_HEM = false;
+
+    for (size_t ie = 0; ie < hotvr_pt.size(); ++ie) {
+        if (hotvr_pt[ie] > pt_threshold &&
+            hotvr_eta[ie] > HEM_eta_min && hotvr_eta[ie] < HEM_eta_max &&
+            hotvr_phi[ie] > HEM_phi_min_hotvr && hotvr_phi[ie] < HEM_phi_max_hotvr) {
+            has_hotvr_in_HEM = true;
+            break; // One is enough
+        }
+    }
+
+    for (size_t ij = 0; ij < jet_pt.size(); ++ij) {
+        if (jet_pt[ij] > pt_threshold &&
+            jet_eta[ij] > HEM_eta_min && jet_eta[ij] < HEM_eta_max &&
+            jet_phi[ij] > HEM_phi_min_jet && jet_phi[ij] < HEM_phi_max_jet) {
+            has_ak4_in_HEM = true;
+            break; // One is enough
+        }
+    }
+
+    // Veto only if HOTVR in HEM but no AK4 in HEM
+    if (has_hotvr_in_HEM && !has_ak4_in_HEM) {
+        return false; // Fail the veto
     }
 
     return true;
@@ -990,4 +914,128 @@ RVec<int> is_inside_hotvr(
     }
 
     return is_inside_vector;
+}
+
+bool HasGenJetMatch(Float_t jet_eta, Float_t jet_phi,
+                    const ROOT::VecOps::RVec<float>& gen_eta,
+                    const ROOT::VecOps::RVec<float>& gen_phi)
+{
+    Float_t min_dr = 999.;
+    for (size_t i = 0; i < gen_eta.size(); ++i) {
+        Float_t dphi = deltaPhi(jet_phi, gen_phi[i]);
+        Float_t dr = deltaR(dphi, jet_eta, gen_eta[i]);
+        if (dr < min_dr)
+            min_dr = dr;
+    }
+    return min_dr < 0.4;
+}
+ROOT::VecOps::RVec<bool> matched_jet_to_genjet(
+    const ROOT::VecOps::RVec<float>& jet_eta,
+    const ROOT::VecOps::RVec<float>& jet_phi,
+    const ROOT::VecOps::RVec<float>& gen_eta,
+    const ROOT::VecOps::RVec<float>& gen_phi
+) {
+    ROOT::VecOps::RVec<bool> matches;
+    for (size_t j = 0; j < jet_eta.size(); ++j) {
+        matches.push_back(HasGenJetMatch(jet_eta[j], jet_phi[j], gen_eta, gen_phi));
+    }
+    return matches;
+}
+
+ROOT::VecOps::RVec<bool> jes_jer_flags_from_nominal_hotvr(
+    const ROOT::VecOps::RVec<float>& jet_eta,
+    const ROOT::VecOps::RVec<float>& jet_phi,
+    const ROOT::VecOps::RVec<float>& jet_pt,
+    const ROOT::VecOps::RVec<int>&   jet_flag,
+    const ROOT::VecOps::RVec<float>& jet_var_eta,
+    const ROOT::VecOps::RVec<float>& jet_var_phi,
+    float alpha     = 0.8f,
+    float dR_min    = 0.05f,
+    float dR_cap    = 0.4f,
+    bool  unmatched_value = false
+) {
+    ROOT::VecOps::RVec<bool> out(jet_var_eta.size(), unmatched_value);
+
+    for (size_t j = 0; j < jet_var_eta.size(); ++j) {
+        int   best_i  = -1;
+        float best_dR = std::numeric_limits<float>::infinity();
+
+        for (size_t i = 0; i < jet_eta.size(); ++i) {
+            const float pt_nom   = (i < jet_pt.size()) ? jet_pt[i] : 0.0f;
+            if (pt_nom <= 0.0f) continue;
+
+            const float R_nom    = 600.0f / pt_nom;
+            const float dR_thr   = std::clamp(alpha * R_nom, dR_min, dR_cap);
+
+            const float dphi     = deltaPhi(jet_var_phi[j], jet_phi[i]);
+            const float dRval    = deltaR(dphi, jet_var_eta[j], jet_eta[i]);
+
+            if (dRval < dR_thr && dRval < best_dR) {
+                best_dR = dRval;
+                best_i  = static_cast<int>(i);
+            }
+        }
+
+        if (best_i >= 0) {
+            const bool flag_val = static_cast<size_t>(best_i) < jet_flag.size() ? (jet_flag[best_i] != 0) : unmatched_value;
+            out[j] = flag_val;
+        }
+    }
+    return out;
+}
+
+RVec<int> matchJetsToGenTops(
+    const RVec<float>& jet_eta, 
+    const RVec<float>& jet_phi,
+    const RVec<float>& gen_eta, 
+    const RVec<float>& gen_phi,
+    float dRmax = 0.8, 
+    bool one_to_one = true)
+{
+  const size_t nj = jet_eta.size(), ng = gen_eta.size();
+  RVec<int> idx(nj, -1);
+  RVec<char> used(ng, 0);
+  for (size_t i = 0; i < nj; ++i){
+    float bestDR = 1e9; int best = -1;
+    for (size_t j = 0; j < ng; ++j){
+      if (one_to_one && used[j]) continue;
+      float dr = deltaR(deltaPhi(jet_phi[i], gen_phi[j]), jet_eta[i], gen_eta[j]);
+      if (dr < bestDR && dr < dRmax){ bestDR = dr; best = (int)j; }
+    }
+    idx[i] = best;
+    if (one_to_one && best >= 0) used[best] = 1;
+  }
+  return idx;
+}
+
+/* Variable-radius matching*/
+RVec<int> matchJetsToGenTopsVarR(
+    const RVec<float>& jet_pt,
+    const RVec<float>& jet_eta, 
+    const RVec<float>& jet_phi,
+    const RVec<float>& gen_eta, 
+    const RVec<float>& gen_phi,
+    float Rmin = 0.1, 
+    float Rmax = 1.5,
+    bool one_to_one = true
+){
+  const size_t nj = jet_eta.size(), ng = gen_eta.size();
+  RVec<int> idx(nj, -1);
+  RVec<char> used(ng, 0);
+  for (size_t i = 0; i < nj; ++i){
+    if (i >= jet_pt.size() || jet_pt[i] <= 0.f){ idx[i] = -1; continue; }
+    float Rvar = 600.f / jet_pt[i];
+    Rvar = std::min(std::max(Rvar, Rmin), Rmax);
+    const float dRmax = Rvar;
+
+    float bestDR = 1e9; int best = -1;
+    for (size_t j = 0; j < ng; ++j){
+      if (one_to_one && used[j]) continue;
+      float dr = deltaR(deltaPhi(jet_phi[i], gen_phi[j]), jet_eta[i], gen_eta[j]);
+      if (dr < bestDR && dr < dRmax){ bestDR = dr; best = (int)j; }
+    }
+    idx[i] = best;
+    if (one_to_one && best >= 0) used[best] = 1;
+  }
+  return idx;
 }

@@ -89,20 +89,20 @@ ttX_mass400:
   isUsed: true
 
 tt_semilepton:
-  xSec: 403.25
+  xSec: 405.87
   isUsed: true
  
 tt_dilepton:
-  xSec: 97.44
+  xSec: 98.04
   isUsed: true
 
 #https://cms.cern.ch/iCMS/jsp/db_notes/noteInfo.jsp?cmsnoteid=CMS%20AN-2023/137
 tW_dilepton:
-  xSec: 35.99
+  xSec: 4.65 #35.99
   isUsed: true
 
 tbarW_dilepton:
-  xSec: 36.05
+  xSec: 4.65
   isUsed: true
 
 ttH_HTobb:
@@ -169,4 +169,104 @@ qcd_4j_ht_1500_2000:
 
 qcd_4j_ht_2000:
   xSec: 2.650e+01
+  isUsed: true
+
+WW:
+  xSec: 1.285e+01
+  isUsed: true
+
+WZ:
+  xSec: 54.3
+  isUsed: true
+
+ZZ:
+  xSec: 16.7
+  isUsed: true
+
+tttt:
+  xSec: 0.01582
+  isUsed: true
+
+tta_m500: 
+  xSec: 0.01371
+  isUsed: true
+
+tta_m750: 
+  xSec: 0.003769
+  isUsed: true
+
+tta_m1000: 
+  xSec: 0.00123
+  isUsed: true
+
+tta_m1250: 
+  xSec: 0.0004462
+  isUsed: true
+
+tta_m1500: 
+  xSec: 0.0001749
+  isUsed: true
+
+tta_m1750: 
+  xSec: 7.397e-05
+  isUsed: true
+
+tta_m2000: 
+  xSec: 3.241e-05
+  isUsed: true
+
+tta_m2500: 
+  xSec: 6.881e-06
+  isUsed: true
+
+tta_m3000:   
+  xSec: 1.606e-06
+  isUsed: true
+
+tta_m4000:
+  xSec: 9.898e-08
+  isUsed: true
+
+tth_m500: 
+  xSec: 0.009535
+  isUsed: true
+
+tth_m750: 
+  xSec: 0.00301
+  isUsed: true
+
+tth_m1000: 
+  xSec: 0.001064
+  isUsed: true
+
+tth_m1250: 
+  xSec: 0.0004038
+  isUsed: true
+
+tth_m1500: 
+  xSec: 0.0001631
+  isUsed: true
+
+tth_m1750: 
+  xSec: 7.018e-05
+  isUsed: true
+
+tth_m2000: 
+  xSec: 3.111e-05
+  isUsed: true
+
+tth_m2500: 
+  xSec: 6.699e-06
+  isUsed: true
+
+tth_m3000: 
+  xSec: 1.569e-06
+  isUsed: true
+
+tth_m4000: 
+  xSec: 9.805e-08
+  isUsed: true
+
+w_to_lnu_2jets: 
+  xSec: 64481.58
   isUsed: true

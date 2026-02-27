@@ -83,13 +83,14 @@ VARIABLES_BINNING = OrderedDict()
 # VARIABLES_BINNING['phi'] = list(np.arange(-3.5, 3.5, 0.02))
 # VARIABLES_BINNING['eta'] = list(np.arange(-2.5, 2.52, 0.02))
 # VARIABLES_BINNING['invariant_mass_leading_subleading'] = list(np.arange(0., 2002., 2.))
-VARIABLES_BINNING['ht'] = list(np.arange(0., 5020., 20))
+VARIABLES_BINNING['ht'] = list(np.arange(0., 5020., 5))
+# VARIABLES_BINNING['MET_energy'] = list(np.arange(0., 5000., 5))
 
-BOOSTED_JETS = 'ak8'
-Z_PEAK_CUT = 'off'
-Z_PEAK_LOW_EDGE, Z_PEAK_HIGH_EDGE = 80., 101.
+BOOSTED_JETS = 'hotvr'
+# Z_PEAK_CUT = 'on'
+# Z_PEAK_LOW_EDGE, Z_PEAK_HIGH_EDGE = 80., 101.
 # EVENT_SELECTION = "after_2OS_{}_Zpeak_2ak4_2b_outside_{}".format(Z_PEAK_CUT, BOOSTED_JETS)
-EVENT_SELECTION = "after_2OS_{}_Zpeak_2ak4_2b_all_ak4".format(Z_PEAK_CUT)
+EVENT_SELECTION = "after_2OS" #_2ak4_2b_all_ak4".format(Z_PEAK_CUT)
 
 SIGNAL_ONLY_HADRONIC_TOP = False
 
@@ -108,7 +109,7 @@ class Processor:
         if not self.is_data:
             self.xsec = xsec(self.process_name, is_sgn)
             self.sum_gen_weights = sum_gen_weights(input_file, self.process_name, is_sgn, year)
-        self.output_file = creation_output_file(input_file, output_dir, "ht_variables", year, EVENT_SELECTION, self.sys) 
+        self.output_file = creation_output_file(input_file, output_dir, "gen_ht_variables", year, EVENT_SELECTION, self.sys) 
 
 
     def process(self):
@@ -148,13 +149,13 @@ class Processor:
             if self.process_name == 'dy_m-50':
                 root_df_filtered = self._adding_event_selection(root_df_filtered, "LHE_HT < 70")
 
-            if lepton_selection != 'emu':
-                if Z_PEAK_CUT == 'on':
-                    root_df_filtered = self._adding_event_selection(root_df_filtered,
-                                                                    "dilepton_invariant_{}_mass>={} & dilepton_invariant_{}_mass <= {}".format(lepton_selection, Z_PEAK_LOW_EDGE, lepton_selection, Z_PEAK_HIGH_EDGE))
-                if Z_PEAK_CUT == 'off':
-                    root_df_filtered = self._adding_event_selection(root_df_filtered, 
-                                                                    "dilepton_invariant_{}_mass<{} || dilepton_invariant_{}_mass > {}".format(lepton_selection, Z_PEAK_LOW_EDGE, lepton_selection, Z_PEAK_HIGH_EDGE))
+            # if lepton_selection != 'emu':
+            #     if Z_PEAK_CUT == 'on':
+            #         root_df_filtered = self._adding_event_selection(root_df_filtered,
+            #                                                         "dilepton_invariant_{}_mass>={} & dilepton_invariant_{}_mass <= {}".format(lepton_selection, Z_PEAK_LOW_EDGE, lepton_selection, Z_PEAK_HIGH_EDGE))
+            #     if Z_PEAK_CUT == 'off':
+            #         root_df_filtered = self._adding_event_selection(root_df_filtered, 
+            #                                                         "dilepton_invariant_{}_mass<{} || dilepton_invariant_{}_mass > {}".format(lepton_selection, Z_PEAK_LOW_EDGE, lepton_selection, Z_PEAK_HIGH_EDGE))
 
             for var in VARIABLES_BINNING.keys():
                 print('Variable --> {}'.format(var))
@@ -163,23 +164,44 @@ class Processor:
                 bin_edges = array('d', VARIABLES_BINNING[var])
                 histo_var, histo_title = '', ''
 
-                if var == 'ht': 
-                    if BOOSTED_JETS == 'ak8': 
-                        ht_types = ['only_ak4_all']#['only_ak4_outside_ak8', 'ak8_and_ak4']
-                    if BOOSTED_JETS == 'hotvr':
-                        ht_types = ['only_ak4_all']#['only_ak4_outside_hotvr', 'hotvr_and_ak4']
+                # histo_title = "{}_{}_{}_{}".format(self.process_name, var, EVENT_SELECTION, lepton_selection)
+                # if not self.is_data:
+                #     output_histo = root_df_filtered.Histo1D((histo_title, '', bins, bin_edges), 
+                #                                             var, 'weight')
+                # else:
+                #     output_histo = root_df_filtered.Histo1D((histo_title, '', bins, bin_edges), 
+                #                                             var)
+                # output_histo.Write()
+                # print('Total events: {}'.format(output_histo.Integral()))
 
-                    for ht_type in ht_types:
-                        histo_title = "{}_{}_{}_{}_{}".format(self.process_name, var, ht_type, EVENT_SELECTION, lepton_selection)
-                        histo_var = 'ht_{}'.format(ht_type)
-                        if not self.is_data:
-                            output_histo = root_df_filtered.Histo1D((histo_title, '', bins, bin_edges), 
-                                                                    histo_var, 'weight')
-                        else:
-                            output_histo = root_df_filtered.Histo1D((histo_title, '', bins, bin_edges), 
-                                                                    histo_var)
-                        output_histo.Write()
-                        print('Total events: {}'.format(output_histo.Integral()))
+                if var == 'ht': 
+                    histo_title = "{}_LHE_{}_{}_{}".format(self.process_name, var, EVENT_SELECTION, lepton_selection)
+                    histo_var = 'LHE_HT'
+                    if not self.is_data:
+                        output_histo = root_df_filtered.Histo1D((histo_title, '', bins, bin_edges), 
+                                                                histo_var, 'weight')
+                    else:
+                        output_histo = root_df_filtered.Histo1D((histo_title, '', bins, bin_edges), 
+                                                                histo_var)
+                    output_histo.Write()
+                    print('Total events: {}'.format(output_histo.Integral()))
+
+                    # if BOOSTED_JETS == 'ak8': 
+                    #     ht_types = ['only_ak4_all']#['only_ak4_outside_ak8', 'ak8_and_ak4']
+                    # if BOOSTED_JETS == 'hotvr':
+                    #     ht_types = ['only_ak4_all']#['only_ak4_outside_hotvr', 'hotvr_and_ak4']
+
+                    # for ht_type in ht_types:
+                    #     histo_title = "{}_{}_{}_{}_{}".format(self.process_name, var, ht_type, EVENT_SELECTION, lepton_selection)
+                    #     histo_var = 'ht_{}'.format(ht_type)
+                    #     if not self.is_data:
+                    #         output_histo = root_df_filtered.Histo1D((histo_title, '', bins, bin_edges), 
+                    #                                                 histo_var, 'weight')
+                    #     else:
+                    #         output_histo = root_df_filtered.Histo1D((histo_title, '', bins, bin_edges), 
+                    #                                                 histo_var)
+                    #     output_histo.Write()
+                    #     print('Total events: {}'.format(output_histo.Integral()))
 
 
     def _adding_new_columns(self, root_df):
@@ -284,7 +306,7 @@ def main(input_file, output_dir, year, is_data, is_sgn, weighting, sys):
     # testing
     # input_file = "/nfs/dust/cms/user/gmilella/ttX_ntuplizer/sgn_2018_hotvr/merged/ttX_mass1250_width4_ntuplizer_output.root"
     # input_file = "/nfs/dust/cms/user/gmilella/ttX_ntuplizer/sgn_2018_central_hotvr/merged/TTZprimeToTT_M-1250_Width4_output.root"
-    # input_file = "/nfs/dust/cms/user/gmilella/ttX_ntuplizer/bkg_2016_hotvr/merged/dy_ht_600_MC2016_ntuplizer_merged.root"
+    # input_file = "/nfs/dust/cms/user/gmilella/ttX_ntuplizer/bkg_2018_hotvr/merged/dy_ht_200_MC2018_ntuplizer_5_merged.root"
     # input_file = "/nfs/dust/cms/user/gmilella/ttX_ntuplizer/data_2022_hotvr/merged/DoubleEG_2022_C_merged.root"
     # output_dir = os.getcwd()
 
